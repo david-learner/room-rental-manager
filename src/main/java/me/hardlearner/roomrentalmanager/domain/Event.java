@@ -1,9 +1,6 @@
-package me.hardlearner.roomrentalmanager.controller;
+package me.hardlearner.roomrentalmanager.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,8 +8,9 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
+    Location location;
     private String lessorName;
-    private String roomNo;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
@@ -24,20 +22,20 @@ public class Event {
         this.id = id;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public String getLessorName() {
         return lessorName;
     }
 
     public void setLessorName(String lessorName) {
         this.lessorName = lessorName;
-    }
-
-    public String getRoomNo() {
-        return roomNo;
-    }
-
-    public void setRoomNo(String roomNo) {
-        this.roomNo = roomNo;
     }
 
     public LocalDateTime getStartDateTime() {

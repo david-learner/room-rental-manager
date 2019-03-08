@@ -1,5 +1,6 @@
 package me.hardlearner.roomrentalmanager.controller;
 
+import me.hardlearner.roomrentalmanager.domain.Event;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +12,6 @@ public class EventController {
     @GetMapping
     public ResponseEntity<Event> getEvents() {
         Event event = new Event();
-        event.setId(7L);
-        event.setRoomNo("401");
-        event.setLessorName("FloralRoom");
         return ResponseEntity.ok(event);
     }
 }
