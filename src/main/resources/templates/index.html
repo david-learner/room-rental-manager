@@ -17,15 +17,21 @@
             <input type="text" placeholder="연습실 방번호" name="roomno"/>
             <input type="datetime-local" id="start-date" name="startdate"/>
             <input type="datetime-local" id="end-date" name="enddate"/>
+            <input type="submit" value="추가"/>
         </form>
+        <button onclick="setEndDateTime(30)">30분</button>
+        <button onclick="setEndDateTime(60)">1시간</button>
+        <button onclick="setEndDateTime(90)">1시간30분</button>
+        <button onclick="setEndDateTime(120)">2시간</button>
         <script>
             $(function() {
                 var today = new Date();
-                var date = today.getFullYear()+'-'+(leftZeroPad(today.getMonth()+1))+'-'+leftZeroPad(today.getDate());
-                // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                var time = leftZeroPad(today.getHours()) + ":" + leftZeroPad(today.getMinutes());
-                // 2019-03-09T02:05
-                var dateTime = date+'T'+time;
+                // var date = today.getFullYear()+'-'+(leftZeroPad(today.getMonth()+1))+'-'+leftZeroPad(today.getDate());
+                // // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                // var time = leftZeroPad(today.getHours()) + ":" + leftZeroPad(today.getMinutes());
+                // // 2019-03-09T02:05
+                // var dateTime = date+'T'+time;
+                var dateTime = zeroFilledDateTime(today);
 
                 $('#start-date').val(dateTime);
             });
@@ -37,6 +43,22 @@
                 }else {
                     return target;
                 }
+            }
+
+            function zeroFilledDateTime(oldDate) {
+                var newDate = oldDate.getFullYear()+'-'+(leftZeroPad(oldDate.getMonth()+1))+'-'+leftZeroPad(oldDate.getDate());
+                var newTime = leftZeroPad(oldDate.getHours()) + ":" + leftZeroPad(oldDate.getMinutes());
+                var newDateTime = newDate + 'T' + newTime;
+                console.log("newDate is " + newDateTime);
+                return newDateTime;
+            }
+
+            function setEndDateTime(minutes) {
+                var startDateTime = new Date($('#start-date').val());
+                var endDateTime = new Date();
+                endDateTime.setTime(startDateTime.getTime() + (minutes * 60 * 1000));
+                console.log("enddatetime : " + endDateTime);
+                $('#end-date').val(zeroFilledDateTime(endDateTime));
             }
         </script>
     </div>
