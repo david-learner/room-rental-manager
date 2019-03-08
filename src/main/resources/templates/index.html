@@ -34,21 +34,16 @@
             type: 'GET',
             dataType: "json",
             url: '/api/events',
-            success: function (data, status) {
-                console.log(data);
-                console.log(status);
-            },
-            error: function () {
-                alert("fail");
-            }
+            // 요청에 성공하면, 요청한 JSON 데이터를 done()으로 넘겨준다
         }).done(cb);
     }
 
+    // done()으로부터 넘어온 JSON데이터를 data로 받아서 처리한다
     getEventsData(function (data) {
         console.log(JSON.stringify(data));
         console.log(data.lessorName);
 
-        // locations의 id와 events의 location은 동일해야 한다
+// locations의 id와 events의 location은 동일해야 한다
         var locations = [
             {id: data.roomNo, name: data.lessorName},
             {id: '402', name: "402"},
@@ -85,8 +80,8 @@
 
         var $sked2 = $.skedTape({
             caption: 'Cities',
-            start: yesterday(23, 0),
-            end: tomorrow(0, 0),
+            start: today(9, 0),
+            end: today(18, 0),
             showEventTime: true,
             showEventDuration: true,
             locations: locations.slice(),
@@ -97,6 +92,8 @@
         });
         $sked2.appendTo('#sked2').skedTape('render');
     })
+
+
 
 
     // --------------------------- Data --------------------------------
