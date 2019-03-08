@@ -35,7 +35,7 @@ public class Location {
         this.roomNo = roomNo;
     }
 
-    public Enum getPianoCategory() {
+    public PianoCategory getPianoCategory() {
         return pianoCategory;
     }
 

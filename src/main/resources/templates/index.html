@@ -12,6 +12,35 @@
 <body>
 <div class="container">
     <div class="mb-4">
+        <form action="/api/events/create" method="post">
+            <input type="text" placeholder="대여자 성명" name="lessorname"/>
+            <input type="text" placeholder="연습실 방번호" name="roomno"/>
+            <input type="datetime-local" id="start-date" name="startdate"/>
+            <input type="datetime-local" id="end-date" name="enddate"/>
+        </form>
+        <script>
+            $(function() {
+                var today = new Date();
+                var date = today.getFullYear()+'-'+(leftZeroPad(today.getMonth()+1))+'-'+leftZeroPad(today.getDate());
+                // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                var time = leftZeroPad(today.getHours()) + ":" + leftZeroPad(today.getMinutes());
+                // 2019-03-09T02:05
+                var dateTime = date+'T'+time;
+
+                $('#start-date').val(dateTime);
+            });
+
+            // 3 -> 03, 02 -> 02
+            function leftZeroPad(target) {
+                if (target.toString().length < 2) {
+                    return '0' + target;
+                }else {
+                    return target;
+                }
+            }
+        </script>
+    </div>
+    <div class="mb-4">
         <div id="sked2"></div>
     </div>
 </div>
@@ -41,19 +70,20 @@
     // done()으로부터 넘어온 JSON데이터를 data로 받아서 처리한다
     getEventsData(function (data) {
         console.log(JSON.stringify(data));
-        console.log(data.lessorName);
+        console.log(data.lessorName); // 황태원
+        console.log(data.location.roomNo); // 401
 
 // locations의 id와 events의 location은 동일해야 한다
         var locations = [
-            {id: data.roomNo, name: data.lessorName},
-            {id: '402', name: "402"},
-            {id: '410', name: "410"},
+            {id: data.location.id, name: data.location.roomNo.toString()},
+            {id: '402', name: "402"}, // dummy
+            {id: '410', name: "410"}, // dummy
         ];
 
         var events = [
             {
                 name: data.lessorName,
-                location: data.roomNo,
+                location: data.location.id,
                 start: today(4, 15),
                 end: today(7, 30)
             },
