@@ -73,6 +73,14 @@
         $('#end-date').val(zeroFilledDateTime(endDateTime));
     }
 
+    function getLocations(cb) {
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: '/api/locations',
+        }).done(cb);
+    }
+
     function getEvents(date, cb) {
         $.ajax({
             type: 'GET',
@@ -82,18 +90,6 @@
         }).done(cb);
     }
 
-    function getLocations(cb) {
-        $.ajax({
-            type: 'GET',
-            dataType: "json",
-            url: '/api/locations',
-        }).done(cb);
-    }
-
-    $(getLocations(function setLocations(data) {
-        // foreach
-    }));
-
     var today = new Date();
     var date = today.getFullYear().toString().substring(2, 4) + leftZeroPad(today.getMonth() + 1) + leftZeroPad(today.getDate());
     console.log("date is " + date);
@@ -101,82 +97,91 @@
     // locations의 id와 events의 location은 동일해야 한다
     var locations = [
         // {id: data.location.id, name: data.location.roomno.toString()},
-        {id: '408', name: '408 GRAND'}, // dummy
+        // {id: '777', name: '777 GRAND'}, // dummy
     ];
 
-    $(getEvents(date, function (data) {
-        console.log(JSON.stringify(data));
+    $(
+        getLocations(function setLocations(data) {
+            console.log("setLoc");
+            // console.log(JSON.stringify(data));
+            // foreach
+            for (var i in data) {
+                locations.push({id: data[i].id, name: data[i].roomNo.toString()})
+            }
+
+            getEvents(date, function (data) {
+                console.log("getEve");
+                console.log(JSON.stringify(data));
 
 
+                var events = [
+                    // {
+                    //     name: '황태원',
+                    //     location: '408',
+                    //     start: today(9, 15),
+                    //     end: today(11, 30)
+                    // },
+                ];
 
-        var events = [
-            // {
-            //     name: '황태원',
-            //     location: '408',
-            //     start: today(9, 15),
-            //     end: today(11, 30)
-            // },
-        ];
+                function today(hours, minutes) {
+                    var date = new Date();
+                    date.setUTCHours(hours, minutes, 0, 0);
+                    return date;
+                }
 
-        function today(hours, minutes) {
-            var date = new Date();
-            date.setUTCHours(hours, minutes, 0, 0);
-            return date;
-        }
+                function yesterday(hours, minutes) {
+                    var date = today(hours, minutes);
+                    date.setTime(date.getTime() - 24 * 60 * 60 * 1000);
+                    return date;
+                }
 
-        function yesterday(hours, minutes) {
-            var date = today(hours, minutes);
-            date.setTime(date.getTime() - 24 * 60 * 60 * 1000);
-            return date;
-        }
+                function tomorrow(hours, minutes) {
+                    var date = today(hours, minutes);
+                    date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
+                    return date;
+                }
 
-        function tomorrow(hours, minutes) {
-            var date = today(hours, minutes);
-            date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
-            return date;
-        }
+                var $sked2 = $.skedTape({
+                    caption: 'Cities',
+                    start: today(8, 0),
+                    end: today(19, 0),
+                    showEventTime: true,
+                    showEventDuration: true,
+                    locations: locations.slice(),
+                    events: events.slice(),
+                    tzOffset: 9,
+                    sorting: true,
+                    orderBy: 'name'
+                });
+                $sked2.appendTo('#sked2').skedTape('render');
+            })
+        })
+    );
 
-        var $sked2 = $.skedTape({
-            caption: 'Cities',
-            start: today(8, 0),
-            end: today(19, 0),
-            showEventTime: true,
-            showEventDuration: true,
-            locations: locations.slice(),
-            events: events.slice(),
-            tzOffset: 9,
-            sorting: true,
-            orderBy: 'name'
+    $("#createEvent").submit(function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+        var url = form.attr('action');
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+        }).done(function (data) {
+            console.log("SUCCESS CREATE EVENT");
+            // refresh 없이 하나씩 그릴 수 있을 때 진행하기
+            // console.log("loc len : " + locations.length);
+            // console.log("eve len : " + events.length);
+            // locations.push({id: data.location.id, name: data.location.roomNo.toString()});
+            // events.push({name: data.name, location: data.location.id, start: today(13, 1), end: today(15, 1)});
+            // console.log("loc len : " + locations.length);
+            // console.log("eve len : " + events.length);
+            location.reload(); // refresh(F5)
         });
-        $sked2.appendTo('#sked2').skedTape('render');
 
-        $("#createEvent").submit(function (e) {
-
-            e.preventDefault(); // avoid to execute the actual submit of the form.
-
-            var form = $(this);
-            var url = form.attr('action');
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serialize(), // serializes the form's elements.
-            }).done(function (data) {
-                console.log("SUCCESS CREATE EVENT");
-                // refresh 없이 하나씩 그릴 수 있을 때 진행하기
-                // console.log("loc len : " + locations.length);
-                // console.log("eve len : " + events.length);
-                // locations.push({id: data.location.id, name: data.location.roomNo.toString()});
-                // events.push({name: data.name, location: data.location.id, start: today(13, 1), end: today(15, 1)});
-                // console.log("loc len : " + locations.length);
-                // console.log("eve len : " + events.length);
-                location.reload(); // refresh(F5)
-            });
-
-        });
-    }));
-    // done()으로부터 넘어온 JSON데이터를 data로 받아서 처리한다
-
+    });
 
     // --------------------------- Data --------------------------------
     // var locations = [
