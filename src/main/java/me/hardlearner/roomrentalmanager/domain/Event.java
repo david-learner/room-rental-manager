@@ -14,6 +14,22 @@ public class Event {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
+    public Event() {
+    }
+
+    public Event(String lessorName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.lessorName = lessorName;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+    }
+
+    public Event(Location location, String lessorName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.location = location;
+        this.lessorName = lessorName;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+    }
+
     public Long getId() {
         return id;
     }

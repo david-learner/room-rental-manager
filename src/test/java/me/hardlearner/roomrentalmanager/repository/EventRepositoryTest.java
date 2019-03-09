@@ -31,14 +31,10 @@ public class EventRepositoryTest {
         Location location = new Location(roomNo, PianoCategory.GRAND, pianoCount);
         Location savedLocation = locationRepository.save(location);
 
-        Event event = new Event();
         String lessorName = "황태원";
         LocalDateTime startDateTime = LocalDateTime.of(2019, 3, 8, 9, 00);
         LocalDateTime endDateTime = LocalDateTime.of(2019, 3, 8, 11, 00);
-        event.setLessorName(lessorName);
-        event.setLocation(savedLocation);
-        event.setStartDateTime(startDateTime);
-        event.setEndDateTime(endDateTime);
+        Event event = new Event(lessorName, startDateTime, endDateTime);
 
         Event savedEvent = eventRepository.save(event);
         assertThat(savedEvent.getLocation()).isEqualTo(savedLocation);

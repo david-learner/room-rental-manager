@@ -13,6 +13,9 @@ public class Location {
     private PianoCategory pianoCategory;
     private int pianoCount;
 
+    public Location() {
+    }
+
     public Location(int roomNo, PianoCategory pianoCategory, int pianoCount) {
         this.roomNo = roomNo;
         this.pianoCategory = pianoCategory;

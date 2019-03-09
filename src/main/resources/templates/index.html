@@ -12,11 +12,11 @@
 <body>
 <div class="container">
     <div class="mb-4">
-        <form action="/api/events/create" method="post">
+        <form action="/api/events" method="post">
             <input type="text" placeholder="대여자 성명" name="lessorname"/>
             <input type="text" placeholder="연습실 방번호" name="roomno"/>
-            <input type="datetime-local" id="start-date" name="startdate"/>
-            <input type="datetime-local" id="end-date" name="enddate"/>
+            <input type="datetime-local" id="start-date" name="startdatetime"/>
+            <input type="datetime-local" id="end-date" name="enddatetime"/>
             <input type="submit" value="추가"/>
         </form>
         <button onclick="setEndDateTime(30)">30분</button>
@@ -35,6 +35,10 @@
 
                 $('#start-date').val(dateTime);
             });
+
+            $(function () {
+                console.log("startDate is " + $('#start-date').val());
+            })
 
             // 3 -> 03, 02 -> 02
             function leftZeroPad(target) {
@@ -93,11 +97,11 @@
     getEventsData(function (data) {
         console.log(JSON.stringify(data));
         console.log(data.lessorName); // 황태원
-        console.log(data.location.roomNo); // 401
+        console.log(data.location.roomno); // 401
 
 // locations의 id와 events의 location은 동일해야 한다
         var locations = [
-            {id: data.location.id, name: data.location.roomNo.toString()},
+            {id: data.location.id, name: data.location.roomno.toString()},
             {id: '402', name: "402"}, // dummy
             {id: '410', name: "410"}, // dummy
         ];
