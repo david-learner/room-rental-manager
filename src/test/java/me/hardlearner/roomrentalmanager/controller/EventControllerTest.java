@@ -47,7 +47,7 @@ public class EventControllerTest {
 
     @Test
     public void getEventsOfDay() throws Exception {
-        mockMvc.perform(get("/api/events/days/180310"))
+        mockMvc.perform(get("/api/events/days/180228"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(2)))
                     .andDo(print());

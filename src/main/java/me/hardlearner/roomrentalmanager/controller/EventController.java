@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +41,10 @@ public class EventController {
     }
 
     @GetMapping("/days/{day}")
-    public ResponseEntity<List<Event>> getEventsOfDay(@PathVariable int day) {
-        System.out.println("day is " + day);
-
-        return ResponseEntity.ok(new ArrayList<Event>());
+    public ResponseEntity<List<Event>> getEventsOfDay(@PathVariable String day) {
+        LocalDate localDate = LocalDate.parse(day, DateTimeFormatter.ofPattern("yyMMdd"));
+        List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
+        return ResponseEntity.ok(events);
     }
 
     @PostMapping

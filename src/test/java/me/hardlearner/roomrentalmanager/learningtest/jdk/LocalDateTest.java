@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocalDate {
+public class LocalDateTest {
     @Test
     public void createLocalDate() {
         String inputDay = "180228";
