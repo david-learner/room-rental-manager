@@ -9,7 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -41,5 +45,12 @@ public class EventRepositoryTest {
         assertThat(savedEvent.getLessorName()).isEqualTo(lessorName);
         assertThat(savedEvent.getStartDateTime()).isEqualTo(startDateTime);
         assertThat(savedEvent.getEndDateTime()).isEqualTo(endDateTime);
+    }
+
+    @Test
+    public void getEventsOfDay() {
+        LocalDate localDate = LocalDate.of(2018, 02, 28);
+        List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
+        assertThat(events.size()).isGreaterThan(0);
     }
 }

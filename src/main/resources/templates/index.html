@@ -12,7 +12,7 @@
 <body>
 <div class="container">
     <div class="mb-4">
-        <form action="/api/events" method="post">
+        <form id="createEvent" action="/api/events" method="post">
             <input type="text" placeholder="대여자 성명" name="lessorname"/>
             <input type="text" placeholder="연습실 방번호" name="roomno"/>
             <input type="datetime-local" id="start-date" name="startdatetime"/>
@@ -24,7 +24,7 @@
         <button onclick="setEndDateTime(90)">1시간30분</button>
         <button onclick="setEndDateTime(120)">2시간</button>
         <script>
-            $(function() {
+            $(function () {
                 var today = new Date();
                 // var date = today.getFullYear()+'-'+(leftZeroPad(today.getMonth()+1))+'-'+leftZeroPad(today.getDate());
                 // // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -36,21 +36,17 @@
                 $('#start-date').val(dateTime);
             });
 
-            $(function () {
-                console.log("startDate is " + $('#start-date').val());
-            })
-
             // 3 -> 03, 02 -> 02
             function leftZeroPad(target) {
                 if (target.toString().length < 2) {
                     return '0' + target;
-                }else {
+                } else {
                     return target;
                 }
             }
 
             function zeroFilledDateTime(oldDate) {
-                var newDate = oldDate.getFullYear()+'-'+(leftZeroPad(oldDate.getMonth()+1))+'-'+leftZeroPad(oldDate.getDate());
+                var newDate = oldDate.getFullYear() + '-' + (leftZeroPad(oldDate.getMonth() + 1)) + '-' + leftZeroPad(oldDate.getDate());
                 var newTime = leftZeroPad(oldDate.getHours()) + ":" + leftZeroPad(oldDate.getMinutes());
                 var newDateTime = newDate + 'T' + newTime;
                 console.log("newDate is " + newDateTime);
@@ -65,6 +61,9 @@
                 $('#end-date').val(zeroFilledDateTime(endDateTime));
             }
         </script>
+    </div>
+    <div class="mb-4">
+        <div id="sked1"></div>
     </div>
     <div class="mb-4">
         <div id="sked2"></div>
@@ -84,7 +83,7 @@
 <script type="application/javascript" src="/jquery/jquery.skedTape.js"></script>
 <script type="text/javascript">
 
-    function getEventsData(cb) {
+    function getEvents(cb) {
         $.ajax({
             type: 'GET',
             dataType: "json",
@@ -94,26 +93,31 @@
     }
 
     // done()으로부터 넘어온 JSON데이터를 data로 받아서 처리한다
-    getEventsData(function (data) {
+    getEvents(function (data) {
         console.log(JSON.stringify(data));
         console.log(data.lessorName); // 황태원
         console.log(data.location.roomno); // 401
 
 // locations의 id와 events의 location은 동일해야 한다
         var locations = [
-            {id: data.location.id, name: data.location.roomno.toString()},
-            {id: '402', name: "402"}, // dummy
-            {id: '410', name: "410"}, // dummy
+            // {id: data.location.id, name: data.location.roomno.toString()},
+            {id: '408', name: '408 GRAND'}, // dummy
+            {id: '410', name: '410'}, // dummy
         ];
 
         var events = [
+            // {
+            //     name: data.lessorName,
+            //     location: data.location.id,
+            //     start: today(4, 15),
+            //     end: today(7, 30)
+            // },
             {
-                name: data.lessorName,
-                location: data.location.id,
-                start: today(4, 15),
-                end: today(7, 30)
+                name: '황태원',
+                location: '408',
+                start: today(9, 15),
+                end: today(11, 30)
             },
-
         ];
 
         function today(hours, minutes) {
@@ -136,8 +140,8 @@
 
         var $sked2 = $.skedTape({
             caption: 'Cities',
-            start: today(9, 0),
-            end: today(18, 0),
+            start: today(8, 0),
+            end: today(19, 0),
             showEventTime: true,
             showEventDuration: true,
             locations: locations.slice(),
@@ -147,9 +151,32 @@
             orderBy: 'name'
         });
         $sked2.appendTo('#sked2').skedTape('render');
-    })
 
+        $("#createEvent").submit(function (e) {
 
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+
+            var form = $(this);
+            var url = form.attr('action');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+            }).done(function (data) {
+                console.log("SUCCESS CREATE EVENT");
+                // refresh 없이 하나씩 그릴 수 있을 때 진행하기
+                // console.log("loc len : " + locations.length);
+                // console.log("eve len : " + events.length);
+                // locations.push({id: data.location.id, name: data.location.roomNo.toString()});
+                // events.push({name: data.name, location: data.location.id, start: today(13, 1), end: today(15, 1)});
+                // console.log("loc len : " + locations.length);
+                // console.log("eve len : " + events.length);
+                location.reload(); // refresh(F5)
+                });
+
+            });
+        })
 
 
     // --------------------------- Data --------------------------------

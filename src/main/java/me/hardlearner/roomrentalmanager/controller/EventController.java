@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -34,6 +36,13 @@ public class EventController {
         event.setId(1L);
         event.setLocation(new Location(401, PianoCategory.GRAND, 1));
         return ResponseEntity.ok(event);
+    }
+
+    @GetMapping("/days/{day}")
+    public ResponseEntity<List<Event>> getEventsOfDay(@PathVariable int day) {
+        System.out.println("day is " + day);
+
+        return ResponseEntity.ok(new ArrayList<Event>());
     }
 
     @PostMapping
