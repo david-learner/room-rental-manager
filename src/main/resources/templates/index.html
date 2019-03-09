@@ -100,6 +100,15 @@
         // {id: '777', name: '777 GRAND'}, // dummy
     ];
 
+    var events = [
+        // {
+        //     name: '황태원',
+        //     location: '408',
+        //     start: today(9, 15),
+        //     end: today(11, 30)
+        // },
+    ];
+
     $(
         getLocations(function setLocations(data) {
             console.log("setLoc");
@@ -113,15 +122,16 @@
                 console.log("getEve");
                 console.log(JSON.stringify(data));
 
+                for (var i in data) {
+                    var startHours = new Date(data[i].startDateTime).getHours();
+                    var startMinuts = new Date(data[i].startDateTime).getMinutes();
+                    var endHours = new Date(data[i].endDateTime).getHours();
+                    var endMinuts = new Date(data[i].endDateTime).getMinutes();
 
-                var events = [
-                    // {
-                    //     name: '황태원',
-                    //     location: '408',
-                    //     start: today(9, 15),
-                    //     end: today(11, 30)
-                    // },
-                ];
+                    // console.log("start ~ end : " + startHours + ":" + startMinuts + " ~ " + endHours + ":" + endMinuts);
+
+                    events.push({name:data[i].lessorName, location:data[i].location.id, start:today(startHours, startMinuts), end:today(endHours, endMinuts)});
+                }
 
                 function today(hours, minutes) {
                     var date = new Date();
