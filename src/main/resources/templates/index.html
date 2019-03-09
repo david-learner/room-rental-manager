@@ -23,44 +23,6 @@
         <button onclick="setEndDateTime(60)">1시간</button>
         <button onclick="setEndDateTime(90)">1시간30분</button>
         <button onclick="setEndDateTime(120)">2시간</button>
-        <script>
-            $(function () {
-                var today = new Date();
-                // var date = today.getFullYear()+'-'+(leftZeroPad(today.getMonth()+1))+'-'+leftZeroPad(today.getDate());
-                // // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                // var time = leftZeroPad(today.getHours()) + ":" + leftZeroPad(today.getMinutes());
-                // // 2019-03-09T02:05
-                // var dateTime = date+'T'+time;
-                var dateTime = zeroFilledDateTime(today);
-
-                $('#start-date').val(dateTime);
-            });
-
-            // 3 -> 03, 02 -> 02
-            function leftZeroPad(target) {
-                if (target.toString().length < 2) {
-                    return '0' + target;
-                } else {
-                    return target;
-                }
-            }
-
-            function zeroFilledDateTime(oldDate) {
-                var newDate = oldDate.getFullYear() + '-' + (leftZeroPad(oldDate.getMonth() + 1)) + '-' + leftZeroPad(oldDate.getDate());
-                var newTime = leftZeroPad(oldDate.getHours()) + ":" + leftZeroPad(oldDate.getMinutes());
-                var newDateTime = newDate + 'T' + newTime;
-                console.log("newDate is " + newDateTime);
-                return newDateTime;
-            }
-
-            function setEndDateTime(minutes) {
-                var startDateTime = new Date($('#start-date').val());
-                var endDateTime = new Date();
-                endDateTime.setTime(startDateTime.getTime() + (minutes * 60 * 1000));
-                console.log("enddatetime : " + endDateTime);
-                $('#end-date').val(zeroFilledDateTime(endDateTime));
-            }
-        </script>
     </div>
     <div class="mb-4">
         <div id="sked1"></div>
@@ -82,42 +44,78 @@
       integrity="sha384-HbmWTHay9psM8qyzEKPc8odH4DsOuzdejtnr+OFtDmOcIVnhgReQ4GZBH7uwcjf6" crossorigin="anonymous">
 <script type="application/javascript" src="/jquery/jquery.skedTape.js"></script>
 <script type="text/javascript">
+    $(function () {
+        var today = new Date();
+        var dateTime = zeroFilledDateTime(today);
+        $('#start-date').val(dateTime);
+    });
 
-    function getEvents(cb) {
+    // 3 -> 03, 02 -> 02
+    function leftZeroPad(target) {
+        if (target.toString().length < 2) {
+            return '0' + target;
+        } else {
+            return target;
+        }
+    }
+
+    function zeroFilledDateTime(oldDate) {
+        var newDate = oldDate.getFullYear() + '-' + (leftZeroPad(oldDate.getMonth() + 1)) + '-' + leftZeroPad(oldDate.getDate());
+        var newTime = leftZeroPad(oldDate.getHours()) + ":" + leftZeroPad(oldDate.getMinutes());
+        var newDateTime = newDate + 'T' + newTime;
+        return newDateTime;
+    }
+
+    function setEndDateTime(minutes) {
+        var startDateTime = new Date($('#start-date').val());
+        var endDateTime = new Date();
+        endDateTime.setTime(startDateTime.getTime() + (minutes * 60 * 1000));
+        $('#end-date').val(zeroFilledDateTime(endDateTime));
+    }
+
+    function getEvents(date, cb) {
         $.ajax({
             type: 'GET',
             dataType: "json",
-            url: '/api/events',
+            url: '/api/events/days/' + date,
             // 요청에 성공하면, 요청한 JSON 데이터를 done()으로 넘겨준다
         }).done(cb);
     }
 
-    // done()으로부터 넘어온 JSON데이터를 data로 받아서 처리한다
-    getEvents(function (data) {
-        console.log(JSON.stringify(data));
-        console.log(data.lessorName); // 황태원
-        console.log(data.location.roomno); // 401
+    function getLocations(cb) {
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: '/api/locations',
+        }).done(cb);
+    }
 
-// locations의 id와 events의 location은 동일해야 한다
-        var locations = [
-            // {id: data.location.id, name: data.location.roomno.toString()},
-            {id: '408', name: '408 GRAND'}, // dummy
-            {id: '410', name: '410'}, // dummy
-        ];
+    $(getLocations(function setLocations(data) {
+        // foreach
+    }));
+
+    var today = new Date();
+    var date = today.getFullYear().toString().substring(2, 4) + leftZeroPad(today.getMonth() + 1) + leftZeroPad(today.getDate());
+    console.log("date is " + date);
+
+    // locations의 id와 events의 location은 동일해야 한다
+    var locations = [
+        // {id: data.location.id, name: data.location.roomno.toString()},
+        {id: '408', name: '408 GRAND'}, // dummy
+    ];
+
+    $(getEvents(date, function (data) {
+        console.log(JSON.stringify(data));
+
+
 
         var events = [
             // {
-            //     name: data.lessorName,
-            //     location: data.location.id,
-            //     start: today(4, 15),
-            //     end: today(7, 30)
+            //     name: '황태원',
+            //     location: '408',
+            //     start: today(9, 15),
+            //     end: today(11, 30)
             // },
-            {
-                name: '황태원',
-                location: '408',
-                start: today(9, 15),
-                end: today(11, 30)
-            },
         ];
 
         function today(hours, minutes) {
@@ -173,10 +171,11 @@
                 // console.log("loc len : " + locations.length);
                 // console.log("eve len : " + events.length);
                 location.reload(); // refresh(F5)
-                });
-
             });
-        })
+
+        });
+    }));
+    // done()으로부터 넘어온 JSON데이터를 data로 받아서 처리한다
 
 
     // --------------------------- Data --------------------------------
