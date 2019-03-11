@@ -11,7 +11,9 @@ public class Event {
     @ManyToOne
     Location location;
     private String lessorName;
+    @Column(columnDefinition="TIMESTAMP")
     private LocalDateTime startDateTime;
+    @Column(columnDefinition="TIMESTAMP")
     private LocalDateTime endDateTime;
 
     public Event() {

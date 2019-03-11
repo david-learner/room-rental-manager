@@ -581,6 +581,8 @@
 			} else {
 				var $event = $('<div/>');
 			}
+			// 수정
+			// $event.addClass('sked-tape__event');
 			$event.addClass('sked-tape__event');
 			if (event.className) {
 				$event.addClass(event.className);
@@ -638,9 +640,9 @@
 			return this.$timeIndicator = $('<div class="sked-tape__indicator"/>').hide();
 		},
 		updateTimeIndicatorPos: function() {
-			// var now = new Date().getTime() + this.tzOffset * MS_PER_MINUTE;
+			var now = new Date().getTime() + this.tzOffset * MS_PER_MINUTE;
 			// Korea time is UTC+9, so don't need MS_PER_MINUTE. just MS_PER_HOUR
-			var now = new Date().getTime() + this.tzOffset * MS_PER_HOUR;
+			// var now = new Date().getTime() + this.tzOffset * MS_PER_HOUR;
 			var start = this.start.getTime();
 			var end = this.end.getTime();
 			if (now >= start && now <= end) {

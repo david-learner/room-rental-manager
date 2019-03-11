@@ -13,10 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -24,7 +22,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
-    private static final Logger log =  LoggerFactory.getLogger(EventController.class);
+    private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     @Autowired
     EventRepository eventRepository;
@@ -32,12 +30,17 @@ public class EventController {
     @Autowired
     LocationRepository locationRepository;
 
-    @GetMapping
-    public ResponseEntity<Event> getEvents() {
-        Event event = new Event("황태원", null, null);
-        event.setId(1L);
-        event.setLocation(new Location(401, PianoCategory.GRAND, 1));
+    @GetMapping("/{id}")
+    public ResponseEntity<Event> getEvents(@PathVariable Long id) {
+        Event event = eventRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        log.debug("event : " + event.toString());
         return ResponseEntity.ok(event);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Event>> getEvents() {
+        List<Event> events = eventRepository.findAll();
+        return ResponseEntity.ok(events);
     }
 
     @GetMapping("/days/{day}")
@@ -50,7 +53,9 @@ public class EventController {
     @PostMapping
     public ResponseEntity<Event> createEvent(EventInputDto eventInputDto) {
         Location location = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(IllegalArgumentException::new);
+        log.debug("eventInputDto start : " + eventInputDto.getStartdatetime());
         Event event = eventRepository.save(eventInputDto.toEvent(location));
+        log.debug("event start : " + event.getStartDateTime());
         URI createdUri = linkTo(EventController.class).slash(event.getId()).toUri();
         return ResponseEntity.created(createdUri).body(event);
     }

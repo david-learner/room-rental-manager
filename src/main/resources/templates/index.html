@@ -5,10 +5,8 @@
     <title>room rental manager</title>
 </head>
 <link rel="stylesheet" type="text/css" href="/jquery/jquery.skedTape.css">
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
-        crossorigin="anonymous">
-</script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/solid.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/fontawesome.css">
 <body>
 <div class="container">
     <div class="mb-4">
@@ -24,25 +22,26 @@
         <button onclick="setEndDateTime(90)">1시간30분</button>
         <button onclick="setEndDateTime(120)">2시간</button>
     </div>
-    <div class="mb-4">
-        <div id="sked1"></div>
+    <div style="display: none;" id="update-delete-form">
+        <form>
+            <div>방번호 <input type="text" name="roomno"/></div>
+            <div>대여자 <input type="text" name="lessorname"/></div>
+            <div>시작시간 <input type="datetime-local" name="startdatetime"/></div>
+            <div>종료시간 <input type="datetime-local" name="enddatetime"/></div>
+            <div><button>수정</button><button>삭제</button></div>
+        </form>
     </div>
     <div class="mb-4">
         <div id="sked2"></div>
     </div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-<script src="//stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-        crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/solid.css"
-      integrity="sha384-wnAC7ln+XN0UKdcPvJvtqIH3jOjs9pnKnq9qX68ImXvOGz2JuFoEiCjT8jyZQX2z" crossorigin="anonymous">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/fontawesome.css"
-      integrity="sha384-HbmWTHay9psM8qyzEKPc8odH4DsOuzdejtnr+OFtDmOcIVnhgReQ4GZBH7uwcjf6" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+<script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="//stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 <script type="application/javascript" src="/jquery/jquery.skedTape.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.css"/>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
     $(function () {
         var today = new Date();
@@ -96,14 +95,13 @@
 
     // locations의 id와 events의 location은 동일해야 한다
     var locations = [
-        // {id: data.location.id, name: data.location.roomno.toString()},
-        // {id: '777', name: '777 GRAND'}, // dummy
+        // {id: '1', name: '401'}, // dummy
     ];
 
     var events = [
         // {
         //     name: '황태원',
-        //     location: '408',
+        //     location: '1',
         //     start: today(9, 15),
         //     end: today(11, 30)
         // },
@@ -130,7 +128,12 @@
 
                     // console.log("start ~ end : " + startHours + ":" + startMinuts + " ~ " + endHours + ":" + endMinuts);
 
-                    events.push({name:data[i].lessorName, location:data[i].location.id, start:today(startHours, startMinuts), end:today(endHours, endMinuts)});
+                    events.push({
+                        name: data[i].lessorName,
+                        location: data[i].location.id,
+                        start: today(startHours, startMinuts),
+                        end: today(endHours, endMinuts)
+                    });
                 }
 
                 function today(hours, minutes) {
@@ -152,21 +155,60 @@
                 }
 
                 var $sked2 = $.skedTape({
-                    caption: 'Cities',
+                    caption: 'Room',
                     start: today(8, 0),
                     end: today(19, 0),
                     showEventTime: true,
                     showEventDuration: true,
                     locations: locations.slice(),
                     events: events.slice(),
-                    tzOffset: 9,
+                    tzOffset: 540,
                     sorting: true,
                     orderBy: 'name'
                 });
                 $sked2.appendTo('#sked2').skedTape('render');
+
+                $sked2.on('event:click.skedtape', function (e) {
+                    // console.log("clicked sked2 : " + e.currentTarget.getElementsByTagName());
+                    // console.log("clicked sked2 : " + e.currentTarget.className);
+                    // $sked1.skedTape('removeEvent', e.detail.event.id);
+                    console.log("e id" + e.detail.event.id);
+                    console.log("e name" + e.detail.event.name);
+
+                    $.fancybox.open({
+                        src  : '#update-delete-form',
+                        type : 'inline',
+                        opts : {
+                            beforeShow : function( instance, current ) {
+                                var filteredLoction = locations.filter(function (location) {
+                                    if (location.id == e.detail.event.id) {
+                                        return location;
+                                    }else {
+                                        return null;
+                                    }
+                                })
+                                // filteredLoction은 길이 1짜리 object array인가?
+                                $("#update-delete-form input[name='roomno']").val(filteredLoction[0].name); // 401
+                                $("#update-delete-form input[name='lessorname']").val(e.detail.event.name); // 황태원
+                                $("#update-delete-form input[name='startdatetime']").val(zeroFilledDateTime(e.detail.event.start)); // 황태원
+                                $("#update-delete-form input[name='enddatetime']").val(zeroFilledDateTime(e.detail.event.end)); // 황태원
+                                console.log("start : " + e.detail.event.start + " & end : " + e.detail.event.end);
+                                console.log("original time " + e.detail.event.start.getUTCDate());
+                                console.log("original time " + e.detail.event.start.getUTCHours());
+                                console.log("original time " + e.detail.event.start.getUTCMinutes());
+                                console.log("original time " + e.detail.event.start.getUTCSeconds());
+
+                            },
+                            // afterShow : function( instance, current ) {
+                            //     console.info('done!');
+                            // }
+                        }
+                    });
+                });
             })
         })
     );
+
 
     $("#createEvent").submit(function (e) {
 
@@ -382,9 +424,6 @@
     //     orderBy: 'name'
     // });
     // $sked2.appendTo('#sked2').skedTape('render');
-</script>
-<script>
-
 </script>
 </body>
 </html>

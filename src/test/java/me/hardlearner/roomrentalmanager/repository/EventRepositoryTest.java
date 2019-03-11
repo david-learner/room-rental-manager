@@ -51,4 +51,10 @@ public class EventRepositoryTest {
         List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
         assertThat(events.size()).isGreaterThan(0);
     }
+
+    @Test
+    public void getEvent() {
+        Event event = eventRepository.getOne(1L);
+        System.out.println(event.getStartDateTime());
+    }
 }
