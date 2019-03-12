@@ -60,7 +60,8 @@
 				throw new Error('Invalid time range: ' + JSON.stringify([start, end]));
 			}
 			this.start = floorHours(start);
-			this.end = ceilHours(end);
+			// this.end = ceilHours(end);
+			this.end = floorHours(end);
 			return this.updateUnlessOption(opts);
 		},
 		/**

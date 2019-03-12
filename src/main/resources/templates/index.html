@@ -65,6 +65,12 @@
         return newDateTime;
     }
 
+    function getOffsetTime(date, offset) {
+        var newDateTime = new Date();
+        newDateTime.setTime(date.getTime() + (offset * 60 * 1000));
+        return newDateTime;
+    }
+
     function setEndDateTime(minutes) {
         var startDateTime = new Date($('#start-date').val());
         var endDateTime = new Date();
@@ -126,7 +132,9 @@
                     var endHours = new Date(data[i].endDateTime).getHours();
                     var endMinuts = new Date(data[i].endDateTime).getMinutes();
 
-                    // console.log("start ~ end : " + startHours + ":" + startMinuts + " ~ " + endHours + ":" + endMinuts);
+                    // console.log("data start - end : " + data[i].startDateTime + " ~ " + data[i].endDateTime);
+                    console.log("convert start - end : " + startHours + ":" + startMinuts + " ~ " + endHours + ":" + endMinuts);
+                    // console.log("today start - end : " + today(startHours, startMinuts) + " ~ " + today(endHours, endMinuts));
 
                     events.push({
                         name: data[i].lessorName,
@@ -138,7 +146,10 @@
 
                 function today(hours, minutes) {
                     var date = new Date();
+                    // date.setHours(hours);
+                    // date.setMinutes(minutes);
                     date.setUTCHours(hours, minutes, 0, 0);
+                    console.log(date.toString());
                     return date;
                 }
 
@@ -157,7 +168,7 @@
                 var $sked2 = $.skedTape({
                     caption: 'Room',
                     start: today(8, 0),
-                    end: today(19, 0),
+                    end: today(20, 0),
                     showEventTime: true,
                     showEventDuration: true,
                     locations: locations.slice(),
@@ -180,24 +191,26 @@
                         type : 'inline',
                         opts : {
                             beforeShow : function( instance, current ) {
-                                var filteredLoction = locations.filter(function (location) {
-                                    if (location.id == e.detail.event.id) {
+                                var filteredLocation = locations.filter(function (location) {
+                                    console.log(" id filtering : " + location.id + " : " + e.detail.event.id);
+                                    if (location.id == e.detail.event.location) {
+                                        console.log("find it");
                                         return location;
-                                    }else {
-                                        return null;
                                     }
                                 })
-                                // filteredLoction은 길이 1짜리 object array인가?
-                                $("#update-delete-form input[name='roomno']").val(filteredLoction[0].name); // 401
-                                $("#update-delete-form input[name='lessorname']").val(e.detail.event.name); // 황태원
-                                $("#update-delete-form input[name='startdatetime']").val(zeroFilledDateTime(e.detail.event.start)); // 황태원
-                                $("#update-delete-form input[name='enddatetime']").val(zeroFilledDateTime(e.detail.event.end)); // 황태원
-                                console.log("start : " + e.detail.event.start + " & end : " + e.detail.event.end);
-                                console.log("original time " + e.detail.event.start.getUTCDate());
-                                console.log("original time " + e.detail.event.start.getUTCHours());
-                                console.log("original time " + e.detail.event.start.getUTCMinutes());
-                                console.log("original time " + e.detail.event.start.getUTCSeconds());
 
+                                // filteredLoction은 길이 1짜리 object array인가?
+                                $("#update-delete-form input[name='roomno']").val(filteredLocation[0].name); // 401
+                                $("#update-delete-form input[name='lessorname']").val(e.detail.event.name); // 황태원
+                                $("#update-delete-form input[name='startdatetime']").val(zeroFilledDateTime(getOffsetTime(e.detail.event.start, -540))); // 황태원
+                                $("#update-delete-form input[name='enddatetime']").val(zeroFilledDateTime(getOffsetTime(e.detail.event.end, -540))); // 황태원
+                                console.log("start : " + e.detail.event.start + " & end : " + e.detail.event.end);
+                                console.log("offset start : " + getOffsetTime(e.detail.event.start, -540) + " & end : " + getOffsetTime(e.detail.event.end, -540));
+                                console.log("offset start : " + zeroFilledDateTime(getOffsetTime(e.detail.event.start, -540)) + " & end : " + zeroFilledDateTime(getOffsetTime(e.detail.event.end, -540)));
+                                // console.log("original time " + e.detail.event.start.getUTCDate());
+                                // console.log("original time " + e.detail.event.start.getUTCHours());
+                                // console.log("original time " + e.detail.event.start.getUTCMinutes());
+                                // console.log("original time " + e.detail.event.start.getUTCSeconds());
                             },
                             // afterShow : function( instance, current ) {
                             //     console.info('done!');
