@@ -44,14 +44,20 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.css"/>
 <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
-    $('#update').on('click', function() {
+    $('#delete').on('click', function(e) {
         e.preventDefault();
-
+        var form = $('#update-delete-form');
+        var id = $("#update-delete-form input[name='id']").val();
+        console.log("DELETE /api/events/" + id);
         $.ajax({
-            type: 'GET',
-            dataType: "json",
-            url: '/api/events',
-        }).done(alert("이벤트가 삭제 되었습니다"));
+            type: 'DELETE',
+            url: '/api/events/'+id,
+            data: form.serialize(),
+            success: function(data) {
+                alert("삭제 성공");
+                location.reload();
+            }
+        });
     });
 
     $(function () {
@@ -126,7 +132,7 @@
 
     $(
         getLocations(function setLocations(data) {
-            console.log("setLoc");
+            // console.log("setLoc");
             // console.log(JSON.stringify(data));
             // foreach
             for (var i in data) {
@@ -134,7 +140,7 @@
             }
 
             getEvents(date, function (data) {
-                console.log("getEve");
+                // console.log("getEve");
                 console.log(JSON.stringify(data));
 
                 for (var i in data) {
@@ -144,15 +150,19 @@
                     var endMinuts = new Date(data[i].endDateTime).getMinutes();
 
                     // console.log("data start - end : " + data[i].startDateTime + " ~ " + data[i].endDateTime);
-                    console.log("convert start - end : " + startHours + ":" + startMinuts + " ~ " + endHours + ":" + endMinuts);
+                    // console.log("convert start - end : " + startHours + ":" + startMinuts + " ~ " + endHours + ":" + endMinuts);
                     // console.log("today start - end : " + today(startHours, startMinuts) + " ~ " + today(endHours, endMinuts));
-
+                    // console.log("data[i].id : " + data[i].id);
+                    // console.log("data[i].location.id : " + data[i].location.id);
                     events.push({
                         name: data[i].lessorName,
                         location: data[i].location.id,
                         start: today(startHours, startMinuts),
-                        end: today(endHours, endMinuts)
+                        end: today(endHours, endMinuts),
+                        data: data[i].id
                     });
+
+                    console.log('events : ' + events[0].data);
                 }
 
                 function today(hours, minutes) {
@@ -191,38 +201,31 @@
                 $sked2.appendTo('#sked2').skedTape('render');
 
                 $sked2.on('event:click.skedtape', function (e) {
-                    // console.log("clicked sked2 : " + e.currentTarget.getElementsByTagName());
-                    // console.log("clicked sked2 : " + e.currentTarget.className);
-                    // $sked1.skedTape('removeEvent', e.detail.event.id);
-                    console.log("e id" + e.detail.event.id);
-                    console.log("e name" + e.detail.event.name);
-
                     $.fancybox.open({
                         src  : '#update-delete-form',
                         type : 'inline',
                         opts : {
                             beforeShow : function( instance, current ) {
                                 var filteredLocation = locations.filter(function (location) {
-                                    console.log(" id filtering : " + location.id + " : " + e.detail.event.location);
                                     if (location.id == e.detail.event.location) {
-                                        console.log("find it");
                                         return location;
                                     }
-                                })
+                                });
 
+                                var filteredEvent = events.filter(function (event) {
+                                    console.log("event name : " + event.name + " : " + e.detail.event.name);
+                                  if (event.name == e.detail.event.name) {
+                                      console.log('event find');
+                                      return event;
+                                  }
+                                });
+                                console.log("filtered event id : " + filteredEvent[0].data);
                                 // filteredLoction은 길이 1짜리 object array인가?
-                                $("#update-delete-form input[name='id']").val(e.detail.event.id); // 401
+                                $("#update-delete-form input[name='id']").val(filteredEvent[0].data); // 401
                                 $("#update-delete-form input[name='roomno']").val(filteredLocation[0].name); // 401
                                 $("#update-delete-form input[name='lessorname']").val(e.detail.event.name); // 황태원
                                 $("#update-delete-form input[name='startdatetime']").val(zeroFilledDateTime(getOffsetTime(e.detail.event.start, -540))); // 황태원
                                 $("#update-delete-form input[name='enddatetime']").val(zeroFilledDateTime(getOffsetTime(e.detail.event.end, -540))); // 황태원
-                                console.log("start : " + e.detail.event.start + " & end : " + e.detail.event.end);
-                                console.log("offset start : " + getOffsetTime(e.detail.event.start, -540) + " & end : " + getOffsetTime(e.detail.event.end, -540));
-                                console.log("offset start : " + zeroFilledDateTime(getOffsetTime(e.detail.event.start, -540)) + " & end : " + zeroFilledDateTime(getOffsetTime(e.detail.event.end, -540)));
-                                // console.log("original time " + e.detail.event.start.getUTCDate());
-                                // console.log("original time " + e.detail.event.start.getUTCHours());
-                                // console.log("original time " + e.detail.event.start.getUTCMinutes());
-                                // console.log("original time " + e.detail.event.start.getUTCSeconds());
                             },
                             // afterShow : function( instance, current ) {
                             //     console.info('done!');
