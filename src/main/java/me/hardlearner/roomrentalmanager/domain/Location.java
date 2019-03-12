@@ -1,6 +1,7 @@
 package me.hardlearner.roomrentalmanager.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Location {
@@ -48,5 +49,21 @@ public class Location {
 
     public void setPianoCount(int pianoCount) {
         this.pianoCount = pianoCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return id == location.id &&
+                roomNo == location.roomNo &&
+                pianoCount == location.pianoCount &&
+                pianoCategory == location.pianoCategory;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, roomNo, pianoCategory, pianoCount);
     }
 }

@@ -1,5 +1,6 @@
 package me.hardlearner.roomrentalmanager.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.hardlearner.roomrentalmanager.domain.Event;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+
+import java.net.URI;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureMockMvc
 public class EventControllerTest {
-    private static final Logger log =  LoggerFactory.getLogger(EventControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(EventControllerTest.class);
 
     @Autowired
     TestRestTemplate template;
@@ -35,39 +40,42 @@ public class EventControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Test
     public void getEvents() throws Exception {
         ResponseEntity<Event> response = template.getForEntity("/api/events", Event.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         mockMvc.perform(get("/api/events"))
-                    .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
     public void getEventsOfDay() throws Exception {
         mockMvc.perform(get("/api/events/days/180228"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(2)))
-                    .andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andDo(print());
     }
 
     @Test
     public void createEvent() throws Exception {
         mockMvc.perform(post("/api/events")
-                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                            .param("lessorname", "황태원")
-                            .param("roomno", "402")
-                            .param("startdatetime", "2019-03-09T09:01")
-                            .param("enddatetime", "2019-03-09T11:01"))
-                            .andExpect(status().isCreated())
-                            .andExpect(jsonPath("lessorName").value("황태원"))
-                            .andExpect(jsonPath("location.roomNo").value("402"))
-                            .andExpect(jsonPath("location.pianoCategory").value("GRAND"))
-                            .andExpect(jsonPath("location.pianoCount").value("2"))
-                            .andExpect(jsonPath("startDateTime").value("2019-03-09T09:01:00"))
-                            .andExpect(jsonPath("endDateTime").value("2019-03-09T11:01:00"))
-                            .andDo(print());
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("lessorname", "황태원")
+                .param("roomno", "402")
+                .param("startdatetime", "2019-03-09T09:01")
+                .param("enddatetime", "2019-03-09T11:01"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("lessorName").value("황태원"))
+                .andExpect(jsonPath("location.roomNo").value("402"))
+                .andExpect(jsonPath("location.pianoCategory").value("GRAND"))
+                .andExpect(jsonPath("location.pianoCount").value("2"))
+                .andExpect(jsonPath("startDateTime").value("2019-03-09T09:01:00"))
+                .andExpect(jsonPath("endDateTime").value("2019-03-09T11:01:00"))
+                .andDo(print());
     }
 
     @Test
@@ -76,8 +84,36 @@ public class EventControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
         mockMvc.perform(delete("/api/events/1"))
-                        .andExpect(status().isOk());
+                .andExpect(status().isOk());
         mockMvc.perform(get("/api/events/1"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateEvent() throws Exception {
+        ResultActions resultActions = mockMvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("lessorname", "황태원")
+                .param("roomno", "402")
+                .param("startdatetime", "2019-03-09T09:01")
+                .param("enddatetime", "2019-03-09T11:01"))
+                .andExpect(status().isCreated());
+
+        MvcResult result = resultActions.andReturn();
+        String contentAsString = result.getResponse().getContentAsString();
+
+        Event event = objectMapper.readValue(contentAsString, Event.class);
+
+        mockMvc.perform(put("/api/events/" + event.getId())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("lessorname", "황태원")
+                .param("roomno", "403")
+                .param("startdatetime", "2019-03-09T11:01")
+                .param("enddatetime", "2019-03-09T13:01"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("lessorName").value("황태원"))
+                .andExpect(jsonPath("location.roomNo").value("403"))
+                .andExpect(jsonPath("startDateTime").value("2019-03-09T11:01:00"))
+                .andExpect(jsonPath("endDateTime").value("2019-03-09T13:01:00"));
     }
 }

@@ -11,9 +11,9 @@ public class Event {
     @ManyToOne
     Location location;
     private String lessorName;
-    @Column(columnDefinition="TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime startDateTime;
-    @Column(columnDefinition="TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime endDateTime;
 
     public Event() {
@@ -81,5 +81,12 @@ public class Event {
                 ", startDateTime=" + startDateTime +
                 ", endDateTime=" + endDateTime +
                 '}';
+    }
+
+    public void update(EventInputDto dto, Location location) {
+        this.location = location;
+        this.lessorName = dto.getLessorname();
+        this.startDateTime = dto.getStartdatetime();
+        this.endDateTime = dto.getEnddatetime();
     }
 }

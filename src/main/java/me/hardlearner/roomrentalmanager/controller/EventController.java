@@ -66,4 +66,12 @@ public class EventController {
         eventRepository.deleteById(id);
         return ResponseEntity.ok(null);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Event> updateEvent(EventInputDto eventInputDto, @PathVariable Long id) {
+        Location dbLocation = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(NullPointerException::new);
+        Event dbEvent = eventRepository.findById(id).orElseThrow(EventNotFoundException::new);
+        dbEvent.update(eventInputDto, dbLocation);
+        return ResponseEntity.ok(dbEvent);
+    }
 }
