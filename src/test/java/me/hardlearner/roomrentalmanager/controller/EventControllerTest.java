@@ -18,8 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,5 +68,14 @@ public class EventControllerTest {
                             .andExpect(jsonPath("startDateTime").value("2019-03-09T09:01:00"))
                             .andExpect(jsonPath("endDateTime").value("2019-03-09T11:01:00"))
                             .andDo(print());
+    }
+
+    @Test
+    public void deleteEvent() throws Exception {
+        mockMvc.perform(get("/api/events/1"))
+                .andExpect(status().isOk())
+                .andDo(print());
+        mockMvc.perform(delete("/api/events/1"))
+                        .andExpect(status().isOk());
     }
 }

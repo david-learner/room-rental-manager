@@ -59,4 +59,10 @@ public class EventController {
         URI createdUri = linkTo(EventController.class).slash(event.getId()).toUri();
         return ResponseEntity.created(createdUri).body(event);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+        eventRepository.deleteById(id);
+        return ResponseEntity.ok(null);
+    }
 }

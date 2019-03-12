@@ -22,13 +22,13 @@
         <button onclick="setEndDateTime(90)">1시간30분</button>
         <button onclick="setEndDateTime(120)">2시간</button>
     </div>
-    <div style="display: none;" id="update-delete-form">
-        <form>
+    <div style="display: none;" id="update-delete-box">
+        <form id="update-delete-form">
             <div>방번호 <input type="text" name="roomno"/></div>
             <div>대여자 <input type="text" name="lessorname"/></div>
             <div>시작시간 <input type="datetime-local" name="startdatetime"/></div>
             <div>종료시간 <input type="datetime-local" name="enddatetime"/></div>
-            <div><button>수정</button><button>삭제</button></div>
+            <div><button id="update">수정</button><button id="delete">삭제</button></div>
         </form>
     </div>
     <div class="mb-4">
@@ -43,6 +43,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.css"/>
 <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
+    $('#update').on('click', function() {
+        e.preventDefault();
+    });
+
     $(function () {
         var today = new Date();
         var dateTime = zeroFilledDateTime(today);
