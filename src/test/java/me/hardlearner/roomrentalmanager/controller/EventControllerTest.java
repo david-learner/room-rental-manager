@@ -77,5 +77,7 @@ public class EventControllerTest {
                 .andDo(print());
         mockMvc.perform(delete("/api/events/1"))
                         .andExpect(status().isOk());
+        mockMvc.perform(get("/api/events/1"))
+                .andExpect(status().isNotFound());
     }
 }

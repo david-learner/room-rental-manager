@@ -24,6 +24,7 @@
     </div>
     <div style="display: none;" id="update-delete-box">
         <form id="update-delete-form">
+            <div style="display: none;"><input type="hidden" name="id"></div>
             <div>방번호 <input type="text" name="roomno"/></div>
             <div>대여자 <input type="text" name="lessorname"/></div>
             <div>시작시간 <input type="datetime-local" name="startdatetime"/></div>
@@ -45,6 +46,12 @@
 <script type="text/javascript">
     $('#update').on('click', function() {
         e.preventDefault();
+
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: '/api/events',
+        }).done(alert("이벤트가 삭제 되었습니다"));
     });
 
     $(function () {
@@ -196,7 +203,7 @@
                         opts : {
                             beforeShow : function( instance, current ) {
                                 var filteredLocation = locations.filter(function (location) {
-                                    console.log(" id filtering : " + location.id + " : " + e.detail.event.id);
+                                    console.log(" id filtering : " + location.id + " : " + e.detail.event.location);
                                     if (location.id == e.detail.event.location) {
                                         console.log("find it");
                                         return location;
@@ -204,6 +211,7 @@
                                 })
 
                                 // filteredLoction은 길이 1짜리 object array인가?
+                                $("#update-delete-form input[name='id']").val(e.detail.event.id); // 401
                                 $("#update-delete-form input[name='roomno']").val(filteredLocation[0].name); // 401
                                 $("#update-delete-form input[name='lessorname']").val(e.detail.event.name); // 황태원
                                 $("#update-delete-form input[name='startdatetime']").val(zeroFilledDateTime(getOffsetTime(e.detail.event.start, -540))); // 황태원

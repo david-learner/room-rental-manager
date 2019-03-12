@@ -4,6 +4,7 @@ import me.hardlearner.roomrentalmanager.domain.Event;
 import me.hardlearner.roomrentalmanager.domain.EventInputDto;
 import me.hardlearner.roomrentalmanager.domain.Location;
 import me.hardlearner.roomrentalmanager.domain.PianoCategory;
+import me.hardlearner.roomrentalmanager.exception.EventNotFoundException;
 import me.hardlearner.roomrentalmanager.repository.EventRepository;
 import me.hardlearner.roomrentalmanager.repository.LocationRepository;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class EventController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEvents(@PathVariable Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("event id : " + id + "is wrong"));
         log.debug("event : " + event.toString());
         return ResponseEntity.ok(event);
     }
