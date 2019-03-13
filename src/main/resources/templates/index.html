@@ -60,6 +60,22 @@
         });
     });
 
+    $('#update').on('click', function(e) {
+        e.preventDefault();
+        var form = $('#update-delete-form');
+        var id = $("#update-delete-form input[name='id']").val();
+        console.log("PUT /api/events/" + id);
+        $.ajax({
+            type: 'PUT',
+            url: '/api/events/'+id,
+            data: form.serialize(),
+            success: function(data) {
+                alert("수정 성공");
+                location.reload();
+            }
+        });
+    });
+
     $(function () {
         var today = new Date();
         var dateTime = zeroFilledDateTime(today);
@@ -84,7 +100,10 @@
 
     function getOffsetTime(date, offset) {
         var newDateTime = new Date();
+        console.log("original date : " + date);
+        console.log("new date : " + newDateTime);
         newDateTime.setTime(date.getTime() + (offset * 60 * 1000));
+        console.log("offset date : " + date);
         return newDateTime;
     }
 
@@ -221,6 +240,8 @@
                                 });
                                 console.log("filtered event id : " + filteredEvent[0].data);
                                 // filteredLoction은 길이 1짜리 object array인가?
+
+                                // date타임 오차 어떻게 해결하지 진짜 ㅜㅜ
                                 $("#update-delete-form input[name='id']").val(filteredEvent[0].data); // 401
                                 $("#update-delete-form input[name='roomno']").val(filteredLocation[0].name); // 401
                                 $("#update-delete-form input[name='lessorname']").val(e.detail.event.name); // 황태원

@@ -69,9 +69,11 @@ public class EventController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(EventInputDto eventInputDto, @PathVariable Long id) {
+        log.debug("update api called");
         Location dbLocation = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(NullPointerException::new);
         Event dbEvent = eventRepository.findById(id).orElseThrow(EventNotFoundException::new);
         dbEvent.update(eventInputDto, dbLocation);
-        return ResponseEntity.ok(dbEvent);
+        Event updatedEvent = eventRepository.save(dbEvent);
+        return ResponseEntity.ok(updatedEvent);
     }
 }
