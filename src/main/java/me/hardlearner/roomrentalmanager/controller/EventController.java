@@ -42,6 +42,7 @@ public class EventController {
     public ResponseEntity<List<Event>> getEvents() {
         List<Event> events = eventRepository.findAll();
         return ResponseEntity.ok(events);
+//        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/days/{day}")

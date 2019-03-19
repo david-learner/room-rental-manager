@@ -2,6 +2,7 @@ package me.hardlearner.roomrentalmanager.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.hardlearner.roomrentalmanager.domain.Event;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.net.URI;
+import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -43,20 +45,37 @@ public class EventControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Before
+    public void setUp() throws Exception {
+        mockMvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("lessorname", "황태원")
+                .param("roomno", "401")
+                .param("startdatetime", "2019-02-28T09:00")
+                .param("enddatetime", "2019-02-28T11:00"))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("lessorname", "김화원")
+                .param("roomno", "402")
+                .param("startdatetime", "2019-02-28T13:00")
+                .param("enddatetime", "2019-02-28T14:00"))
+                .andExpect(status().isCreated());
+    }
+
     @Test
     public void getEvents() throws Exception {
-        ResponseEntity<Event> response = template.getForEntity("/api/events", Event.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
         mockMvc.perform(get("/api/events"))
-                .andExpect(status().isOk());
+                            .andExpect(jsonPath("$").exists())
+                            .andExpect(status().isOk());
     }
 
     @Test
     public void getEventsOfDay() throws Exception {
-        mockMvc.perform(get("/api/events/days/180228"))
+        mockMvc.perform(get("/api/events/days/190228"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$").exists())
                 .andDo(print());
     }
 

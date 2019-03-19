@@ -45,9 +45,5 @@ INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 1
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 535);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 536);
 
-# INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id) VALUES ('황태원', '2018-02-28 12:34:00', '2018-02-28 13:04:00', 1);
-# INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id) VALUES ('윤혁주', '2018-02-28 14:56:00', '2018-02-28 15:26:00', 2);
-# INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id) VALUES ('신동준', '2020-02-29 14:56:00', '2020-02-29 15:26:00', 2);
+INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id) VALUES ('황태원', '2019-02-28 12:34:00', '2019-02-28 13:34:00', 1);
 INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id) VALUES ('신동준', '2019-03-13 14:00:00', '2019-03-13 15:00:00', 2);
-
-INSERT INTO EVENT_TIME(time) VALUES('2019-03-11 15:26:00');

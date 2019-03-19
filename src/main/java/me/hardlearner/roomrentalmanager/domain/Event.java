@@ -19,15 +19,12 @@ public class Event {
     public Event() {
     }
 
-    public Event(String lessorName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        this.lessorName = lessorName;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-    }
-
     public Event(Location location, String lessorName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.location = location;
         this.lessorName = lessorName;
+        if (startDateTime.isAfter(endDateTime) || startDateTime.equals(endDateTime)) {
+            throw new IllegalArgumentException("시작시간은 종료시간보다 이른시간이어야 합니다");
+        }
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }
@@ -88,5 +85,12 @@ public class Event {
         this.lessorName = dto.getLessorname();
         this.startDateTime = dto.getStartdatetime();
         this.endDateTime = dto.getEnddatetime();
+    }
+
+    public boolean isOverlap(Event secondEvent) {
+        if (!this.location.equals(secondEvent.location)) {
+            throw new IllegalStateException("서로 다른 장소입니다");
+        }
+        return this.endDateTime.isAfter(secondEvent.startDateTime);
     }
 }

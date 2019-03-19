@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,7 +37,7 @@ public class EventRepositoryTest {
         String lessorName = "황태원";
         LocalDateTime startDateTime = LocalDateTime.of(2019, 3, 8, 9, 00);
         LocalDateTime endDateTime = LocalDateTime.of(2019, 3, 8, 11, 00);
-        Event event = new Event(lessorName, startDateTime, endDateTime);
+        Event event = new Event(savedLocation, lessorName, startDateTime, endDateTime);
 
         Event savedEvent = eventRepository.save(event);
         assertThat(savedEvent.getLocation()).isEqualTo(savedLocation);
@@ -47,12 +48,13 @@ public class EventRepositoryTest {
 
     @Test
     public void getEventsOfDay() {
-        LocalDate localDate = LocalDate.of(2018, 02, 28);
+        LocalDate localDate = LocalDate.of(2019, 02, 28);
         List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
         assertThat(events.size()).isGreaterThan(0);
     }
 
     @Test
+    @Transactional
     public void getEvent() {
         Event event = eventRepository.getOne(1L);
         System.out.println(event.getStartDateTime());
