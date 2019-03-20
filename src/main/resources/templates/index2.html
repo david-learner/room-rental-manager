@@ -13,20 +13,22 @@
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
 <body>
-    <header></header>
-    <section class="d-flex flex-row">
-        <div class="d-flex flex-column border-default time-locations" id="time-locations">
-            <!--<div class="border-default">401</div>-->
-            <!--<div class="border-default">402</div>-->
-        </div>
-        <div class="d-flex flex-column border-default time-events" id="time-events">
-            <div class="d-flex flex-row time-row">
-                <!--<div>rental 01</div>-->
-                <!--<div>rental 02</div>-->
-            </div>
-        </div>
-    </section>
-    <footer></footer>
+<header></header>
+<section class="d-flex flex-row">
+    <div class="d-flex flex-column border-default time-locations" id="time-locations">
+        <!--<div class="border-default time-location">401</div>-->
+        <!--<div class="border-default time-location">402</div>-->
+    </div>
+    <div class="d-flex flex-column border-default time-events" id="time-events">
+        <!--<div class="d-flex flex-row time-row">-->
+        <!--<div class="d-flex flex-column time-event">-->
+        <!--<div>이름</div>-->
+        <!--<div>시간</div>-->
+        <!--</div>-->
+        <!--</div>-->
+    </div>
+</section>
+<footer></footer>
 </body>
 <script>
     function getLocations(callback) {
@@ -51,9 +53,10 @@
         getLocations(function (data) {
             // console.log(JSON.stringify(data));
 
-            for(var i in data) {
+            for (var i in data) {
                 // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
                 var location = document.createElement("div");
+                location.classList.add("time-location");
                 var roomNo = data[i].roomNo;
                 var locationNo = document.createTextNode(roomNo);
                 location.append(locationNo);
@@ -62,16 +65,41 @@
                 // id가 time-events인 태그 아래에 각 방의 대여 기록을 나타내는 div태그 삽입
                 var event = document.createElement("div");
                 event.classList.add("d-flex", "flex-row", "time-row");
+                document.getElementById("time-events").appendChild(event);
             }
         }),
-        
+
         getEvents('190228', function (data) {
             console.log(JSON.stringify(data));
 
+            var timeRows = document.getElementById("time-events").children;
+            for (var i = 0; i < data.length; i++) {
+                var roomId = data[i].location.id;
+                var lessorName = document.createTextNode(data[i].lessorName);
 
+                var timeEventElement = document.createElement("div");
+                timeEventElement.classList.add("d-flex", "flex-column", "time-event");
+                var lessorNameElement = document.createElement("div");
+                lessorNameElement.classList.add("time-lessor");
+                var startDateTimeElement = document.createElement("div");
+                startDateTimeElement.classList.add("time-start-date");
+                var endDateTimeElement = document.createElement("div");
+                endDateTimeElement.classList.add("time-end-date");
+
+                timeEventElement.appendChild(lessorNameElement);
+                timeEventElement.appendChild(startDateTimeElement);
+                timeEventElement.appendChild(endDateTimeElement);
+
+                lessorNameElement.appendChild(lessorName);
+
+                timeRows[roomId - 1].appendChild(timeEventElement);
+            }
+
+            // <!--<div class="d-flex flex-column time-event">-->
+            //      <!--<div>이름</div>-->
+            //      <!--<div>시간</div>-->
+            // <!--</div>-->
         })
-
-
     )
 </script>
 <script src="/js/bootstrap.js"></script>

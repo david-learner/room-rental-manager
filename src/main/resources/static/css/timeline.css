@@ -1,3 +1,9 @@
 .border-default {
     border: 1px solid gray !important;
 }
+
+.time-event, .time-location {
+    height: 80px;
+    width: 160px;
+    border: 1px solid red;
+}
