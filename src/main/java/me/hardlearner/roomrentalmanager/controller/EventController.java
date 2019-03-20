@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -49,6 +50,7 @@ public class EventController {
     public ResponseEntity<List<Event>> getEventsOfDay(@PathVariable String day) {
         LocalDate localDate = LocalDate.parse(day, DateTimeFormatter.ofPattern("yyMMdd"));
         List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
+        Collections.sort(events);
         return ResponseEntity.ok(events);
     }
 

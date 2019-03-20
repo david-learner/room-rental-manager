@@ -8,58 +8,72 @@
 <link rel="stylesheet" href="/css/bootstrap.css">
 <link rel="stylesheet" href="/css/bootstrap-grid.css">
 <link rel="stylesheet" href="/css/bootstrap-reboot.css">
-<body>
-<div>header</div>
-<div class="wrapper">
-    <div class="side d-inline-block align-top">
-        <div class="border-default location-box text-right">empty</div>
-        <div class="border-default location-box text-right">401</div>
-        <div class="border-default location-box text-right">402</div>
-    </div>
-    <div class="time-table d-inline-block">
-        <div class="time-indicator">
-            <div class="time-row">
-                <span class="d-inline-block align-text-bottom time-column">00</span>
-                <span class="d-inline-block align-text-bottom time-column">01</span>
-                <span class="d-inline-block align-text-bottom time-column">02</span>
-                <span class="d-inline-block align-text-bottom time-column">03</span>
-                <span class="d-inline-block align-text-bottom time-column">04</span>
-                <span class="d-inline-block align-text-bottom time-column">05</span>
-                <span class="d-inline-block align-text-bottom time-column">06</span>
-                <span class="d-inline-block align-text-bottom time-column">07</span>
-                <span class="d-inline-block align-text-bottom time-column">08</span>
-                <span class="d-inline-block align-text-bottom time-column">09</span>
-                <span class="d-inline-block align-text-bottom time-column">10</span>
-                <span class="d-inline-block align-text-bottom time-column">11</span>
-                <span class="d-inline-block align-text-bottom time-column">12</span>
-                <span class="d-inline-block align-text-bottom time-column">13</span>
-                <span class="d-inline-block align-text-bottom time-column">14</span>
-                <span class="d-inline-block align-text-bottom time-column">15</span>
-                <span class="d-inline-block align-text-bottom time-column">16</span>
-                <span class="d-inline-block align-text-bottom time-column">17</span>
-                <span class="d-inline-block align-text-bottom time-column">18</span>
-                <span class="d-inline-block align-text-bottom time-column">19</span>
-                <span class="d-inline-block align-text-bottom time-column">20</span>
-                <span class="d-inline-block align-text-bottom time-column">21</span>
-                <span class="d-inline-block align-text-bottom time-column">22</span>
-                <span class="d-inline-block align-text-bottom time-column">23</span>
-            </div>
-        </div>
-        <div class="time-data">
-            <div class="time-row">
-                <span data-event-id="1" class="time-event">123</span>
-                <span class="time-event">123</span>
-            </div>
-        </div>
-    </div>
-</div>
-<div>footer</div>
-</body>
 <script
         src="http://code.jquery.com/jquery-3.3.1.js"
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
-<script src="/js/timeline.js"></script>
+<body>
+    <header></header>
+    <section class="d-flex flex-row">
+        <div class="d-flex flex-column border-default time-locations" id="time-locations">
+            <!--<div class="border-default">401</div>-->
+            <!--<div class="border-default">402</div>-->
+        </div>
+        <div class="d-flex flex-column border-default time-events" id="time-events">
+            <div class="d-flex flex-row time-row">
+                <!--<div>rental 01</div>-->
+                <!--<div>rental 02</div>-->
+            </div>
+        </div>
+    </section>
+    <footer></footer>
+</body>
+<script>
+    function getLocations(callback) {
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: '/api/locations',
+        }).done(callback);
+    }
+
+    function getEvents(date, callback) {
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: '/api/events/days/' + date,
+            // 요청에 성공하면, 요청한 JSON 데이터를 done()으로 넘겨준다
+        }).done(callback);
+    }
+
+    $(
+        // 페이지 로딩시 고정된 대여장소 로딩
+        getLocations(function (data) {
+            // console.log(JSON.stringify(data));
+
+            for(var i in data) {
+                // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
+                var location = document.createElement("div");
+                var roomNo = data[i].roomNo;
+                var locationNo = document.createTextNode(roomNo);
+                location.append(locationNo);
+                document.getElementById("time-locations").appendChild(location);
+
+                // id가 time-events인 태그 아래에 각 방의 대여 기록을 나타내는 div태그 삽입
+                var event = document.createElement("div");
+                event.classList.add("d-flex", "flex-row", "time-row");
+            }
+        }),
+        
+        getEvents('190228', function (data) {
+            console.log(JSON.stringify(data));
+
+
+        })
+
+
+    )
+</script>
 <script src="/js/bootstrap.js"></script>
 <script src="/js/bootstrap.bundle.js"></script>
 </html>

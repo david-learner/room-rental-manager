@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Event {
+public class Event implements Comparable<Event> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -80,6 +80,8 @@ public class Event {
                 '}';
     }
 
+
+
     public void update(EventInputDto dto, Location location) {
         this.location = location;
         this.lessorName = dto.getLessorname();
@@ -92,5 +94,10 @@ public class Event {
             throw new IllegalStateException("서로 다른 장소입니다");
         }
         return this.endDateTime.isAfter(secondEvent.startDateTime);
+    }
+
+    @Override
+    public int compareTo(Event o) {
+        return this.getStartDateTime().compareTo(o.getStartDateTime());
     }
 }
