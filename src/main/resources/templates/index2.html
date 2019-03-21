@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="/css/bootstrap-grid.css">
 <link rel="stylesheet" href="/css/bootstrap-reboot.css">
 <link rel="stylesheet" href="/css/jquery-ui.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
 <!-- js파일은 최대한 늦게 로딩하는 게 속도상 이득인데, jquery의 기능 일부가 page loading때 필요해서 상단에 삽입 -->
 <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
 <script src="/js/jquery-ui.js"></script>
@@ -16,42 +17,43 @@
 <header class="d-flex flex-row justify-content-center">
     <div class="d-flex flex-column col-4">
         <div class="d-flex flex-column">
-            <div class="text-center display-3">현재시간</div>
-            <div class="text-center display-3" id="current-time-view"></div>
+            <div class="text-center display-4">현재시간</div>
+            <div class="text-center display-4" id="current-time-view"></div>
         </div>
         <form id="createEvent" action="/api/events" method="post" class="d-flex flex-column">
-            <div class="d-flex flex-row align-baseline">
-                <label class="col-3 p-0">이름</label>
-                <input class="col-9" type="text" placeholder="대여자 성명" name="lessorname"/>
-            </div>
+
+                <label class="mb-0 mt-1">이름</label>
+                <input class="" type="text" placeholder="대여자 성명" name="lessorname"/>
+
             <!--<input type="text" placeholder="연습실 번호" name="roomno"/>-->
-            <div class="d-flex flex-row align-baseline">
-                <label class="col-3 p-0">연습실</label>
-                <select class="col-9" name="roomno" id="room-list"></select>
-            </div>
-            <div class="d-flex flex-row align-baseline">
-                <label class="col-3 p-0">시작시간</label>
-                <input class="col" type="datetime-local" id="start-date" name="startdatetime"/>
-            </div>
-            <div class="d-flex flex-row align-baseline">
-                <label class="col-3 p-0">종료시간</label>
-                <input class="col" type="datetime-local" id="end-date" name="enddatetime"/>
-            </div>
+                <label class="mb-0 mt-1">연습실</label>
+                <select class="" name="roomno" id="room-list"></select>
+
+                <label class="mb-0 mt-1">시작시간</label>
+                <input class="" type="datetime-local" id="start-date" name="startdatetime"/>
+                <label class="mb-0 mt-1">종료시간</label>
+                <input class="" type="datetime-local" id="end-date" name="enddatetime"/>
 
             <div class="d-flex flex-column">
+                <label class="mb-0 mt-1">대여시간 퀵메뉴</label>
                 <div class="d-flex flex-row">
-                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(30)">30분
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1 p-0" onclick="setEndDateTime(30)">30분
                     </button>
-                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(60)">1시간
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1 p-0" onclick="setEndDateTime(45)">45분
+                    </button>
+                    <button type="button" class="col btn btn-secondary mt-1 p-0" onclick="setEndDateTime(60)">1시간
                     </button>
                 </div>
                 <div class="d-flex flex-row">
-                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(90)">1시간30분
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1 p-0" onclick="setEndDateTime(75)">1시간15분
                     </button>
-                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(120)">2시간
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1 p-0" onclick="setEndDateTime(90)">1시간30분
+                    </button>
+                    <button type="button" class="col btn btn-secondary mt-1 p-0" onclick="setEndDateTime(120)">2시간
                     </button>
                 </div>
             </div>
+            <!-- todo 위의 데이터가 다 채워져야 submit button 활성화 -->
             <input type="submit" class="btn btn-primary mt-1" value="연습실 대여 신청"/>
         </form>
     </div>
@@ -69,11 +71,36 @@
         <!--</div>-->
         <!--</div>-->
     </div>
+    <!-- lightbox에 사용될 폼 -->
+    <div style="display: none;" id="update-delete-box">
+        <form id="update-delete-form">
+            <div class="d-flex flex-column">
+                <input type="hidden" name="id">
+
+                <label class="mb-0 mt-1">이름</label>
+                <input class="" type="text" placeholder="대여자 성명" name="lessorname"/>
+
+                <label class="mb-0 mt-1">연습실</label>
+                <select class="" name="roomno" id="locations-update-delete"></select>
+
+                <label class="mb-0 mt-1">시작시간</label>
+                <input class="" type="datetime-local" name="startdatetime"/>
+                <label class="mb-0 mt-1">종료시간</label>
+                <input class="" type="datetime-local" name="enddatetime"/>
+
+                <div class="d-flex justify-content-center">
+                    <button id="update" class="btn btn-primary mr-2 mt-2">수정</button>
+                    <button id="delete" class="btn btn-danger ml-2 mt-2">삭제</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </section>
 <footer></footer>
 </body>
 <script>
     var locations = [];
+    var events = [];
 
     function getLocations(callback) {
         $.ajax({
@@ -94,11 +121,13 @@
 
     function setLocationsToDropdownMenu(data) {
         var roomlist = document.getElementById("room-list");
+        var locationsUpdateDeleteForm = document.getElementById("locations-update-delete");
         for (var index in data) {
             var option = document.createElement("OPTION");
             option.innerText = data[index].roomNo + ' : ' + data[index].pianoCategory + ', ' + data[index].pianoCount;
             option.value = data[index].roomNo;
             roomlist.options.add(option);
+            locationsUpdateDeleteForm.options.add(option);
         }
     }
 
@@ -112,29 +141,48 @@
             // console.log(data[i].startDateTime + ' -> ' + startDateTime);
             // console.log(data[i].endDateTime + ' -> ' + endDateTime);
 
-            var roomId = data[i].location.id;
+            var eventId = data[i].id;
+            var locationId = data[i].location.id;
+            var locationNumber = data[i].location.roomNo;
             var lessorNameTextNode = document.createTextNode(data[i].lessorName);
 
             var startDateTimeText = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
             var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
             var dateTimeNode = document.createTextNode(startDateTimeText + '~' + endDateTimeText);
 
-
             var timeEventElement = document.createElement("div");
             timeEventElement.classList.add("d-flex", "flex-column", "time-event");
+            timeEventElement.setAttribute("onclick", "loadUpdateDeleteForm(event)");
+            var eventIdElement = document.createElement("div");
+            eventIdElement.setAttribute("style", "display: none;");
+            eventIdElement.setAttribute("name", "eventId");
+            var locationIdElement = document.createElement("div");
+            locationIdElement.setAttribute("style", "display: none;");
+            locationIdElement.setAttribute("name", "locationId");
+            var locationNumberElement = document.createElement("div");
+            locationNumberElement.setAttribute("style", "display: none;");
+            locationNumberElement.setAttribute("name", "locationNumber");
             var lessorNameElement = document.createElement("div");
             lessorNameElement.classList.add("time-lessor");
             var dateTimeElement = document.createElement("div");
             dateTimeElement.classList.add("time-datetime");
 
-            timeEventElement.appendChild(lessorNameElement);
-            timeEventElement.appendChild(dateTimeElement);
-
             // div에 text 넣기
             lessorNameElement.appendChild(lessorNameTextNode);
             dateTimeElement.appendChild(dateTimeNode);
+            eventIdElement.appendChild(document.createTextNode(eventId));
+            locationIdElement.appendChild(document.createTextNode(locationId));
+            locationNumberElement.appendChild(document.createTextNode(locationNumber));
 
-            timeRows[roomId - 1].appendChild(timeEventElement);
+            // event div에 내용 추가하기
+            timeEventElement.appendChild(eventIdElement);
+            timeEventElement.appendChild(locationIdElement);
+            timeEventElement.appendChild(locationNumberElement);
+            timeEventElement.appendChild(lessorNameElement);
+            timeEventElement.appendChild(dateTimeElement);
+
+
+            timeRows[locationId - 1].appendChild(timeEventElement);
         }
     }
 
@@ -193,6 +241,41 @@
         return today.getFullYear().toString().substring(2, 4) + leftZeroPad(today.getMonth() + 1) + leftZeroPad(today.getDate());
     }
 
+    function loadUpdateDeleteForm(event) {
+        event.stopPropagation();
+
+        $.fancybox.open({
+            src  : '#update-delete-form',
+            type : 'inline',
+            opts : {
+                beforeShow : function() {
+                    // console.log(event.currentTarget.children[4]);
+                    // console.log(event.currentTarget.querySelector('div[name="eventId"]').innerHTML);
+                    // console.log(event.currentTarget.querySelector('div[name="locationId"]'));
+                    // console.log(event.currentTarget.querySelector('div[name="locationNumber"]').innerHTML);
+                    // console.log(event.currentTarget.querySelector('.time-lessor').innerHTML);
+
+                    var eventId = event.currentTarget.querySelector('div[name="eventId"]').innerHTML;
+                    var filteredEvent = events.filter(function (event) {
+                        console.log("e id : " + event.id + " / eventId : " + eventId);
+                        if (event.id == eventId) {
+                            return event;
+                        }
+                    });
+
+                    // var lessorName = event.currentTarget.querySelector('.time-lessor').innerHTML;
+                    // var locationNumber = event.currentTarget.querySelector('div[name="locationNumber"]').innerHTML;
+
+                    $("#update-delete-form input[name='id']").val(eventId); // 1
+                    $("#update-delete-form input[name='lessorname']").val(filteredEvent[0].lessorName); // 황태원
+                    $("#update-delete-form select[name='roomno']").val(filteredEvent[0].location.roomNo); // 401
+                    $("#update-delete-form input[name='startdatetime']").val(filteredEvent[0].startDateTime);
+                    $("#update-delete-form input[name='enddatetime']").val(filteredEvent[0].endDateTime);
+                }
+            }
+        });
+    }
+
     // 페이지 로딩시 동작
     $(
         // 페이지 로딩시 고정된 대여장소 로딩
@@ -220,6 +303,9 @@
 
         // 오늘 날짜에 해당하는 이벤트 불러오기
         getEvents(getDays(), function (data) {
+            for (var i in data) {
+                events.push(data[i]);
+            }
             drawEvents(data);
         }),
 
@@ -252,4 +338,5 @@
 </script>
 <script src="/js/bootstrap.js"></script>
 <script src="/js/bootstrap.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
 </html>

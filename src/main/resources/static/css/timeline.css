@@ -8,3 +8,8 @@
     border: 1px solid red;
 }
 
+.time-row {
+    /* 데이터가 없어도 공간확보를 위해 */
+    height: 80px;
+}
+
