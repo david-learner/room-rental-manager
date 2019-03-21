@@ -13,7 +13,27 @@
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
 <body>
-<header></header>
+<header>
+    <div class="d-flex flex-row justify-content-center">
+        <form id="createEvent" action="/api/events" method="post" class="d-flex flex-column w-30">
+            <input type="text" placeholder="대여자 성명" name="lessorname"/>
+            <input type="text" placeholder="연습실 번호" name="roomno"/>
+            <input type="datetime-local" id="start-date" name="startdatetime"/>
+            <input type="datetime-local" id="end-date" name="enddatetime"/>
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-row">
+                    <button type="button" class="col" onclick="setEndDateTime(30)">30분</button>
+                    <button type="button" class="col" onclick="setEndDateTime(60)">1시간</button>
+                </div>
+                <div class="d-flex flex-row">
+                    <button type="button" class="col" onclick="setEndDateTime(90)">1시간30분</button>
+                    <button type="button" class="col" onclick="setEndDateTime(120)">2시간</button>
+                </div>
+            </div>
+            <input type="submit" value="연습실 대여 신청"/>
+        </form>
+    </div>
+</header>
 <section class="d-flex flex-row">
     <div class="d-flex flex-column border-default time-locations" id="time-locations">
         <!--<div class="border-default time-location">401</div>-->
@@ -48,6 +68,72 @@
         }).done(callback);
     }
 
+    function drawEvents(data) {
+        console.log(JSON.stringify(data));
+
+        var timeRows = document.getElementById("time-events").children;
+        for (var i = 0; i < data.length; i++) {
+            var startDateTime = new Date(data[i].startDateTime);
+            var endDateTime = new Date(data[i].endDateTime);
+            // console.log(data[i].startDateTime + ' -> ' + startDateTime);
+            // console.log(data[i].endDateTime + ' -> ' + endDateTime);
+
+            var roomId = data[i].location.id;
+            var lessorNameTextNode = document.createTextNode(data[i].lessorName);
+
+            var startDateTimeText = startDateTime.getHours() + ':' + startDateTime.getMinutes();
+            var endDateTimeText = endDateTime.getHours() + ':' + endDateTime.getMinutes();
+            var dateTimeNode = document.createTextNode(startDateTimeText + '~' + endDateTimeText);
+
+
+            var timeEventElement = document.createElement("div");
+            timeEventElement.classList.add("d-flex", "flex-column", "time-event");
+            var lessorNameElement = document.createElement("div");
+            lessorNameElement.classList.add("time-lessor");
+            var dateTimeElement = document.createElement("div");
+            dateTimeElement.classList.add("time-datetime");
+
+            timeEventElement.appendChild(lessorNameElement);
+            timeEventElement.appendChild(dateTimeElement);
+
+            // div에 text 넣기
+            lessorNameElement.appendChild(lessorNameTextNode);
+            dateTimeElement.appendChild(dateTimeNode);
+
+            timeRows[roomId - 1].appendChild(timeEventElement);
+        }
+    }
+
+    function setCurrentDateTime() {
+        var today = new Date();
+        var currentDateTime = zeroFilledDateTime(today);
+        $('#start-date').val(currentDateTime);
+    }
+
+    function setEndDateTime(minutes) {
+        var startDateTime = new Date($('#start-date').val());
+        var endDateTime = new Date();
+        endDateTime.setTime(startDateTime.getTime() + (minutes * 60 * 1000));
+        $('#end-date').val(zeroFilledDateTime(endDateTime));
+    }
+
+    function zeroFilledDateTime(oldDate) {
+        var newDate = oldDate.getFullYear() + '-' + (leftZeroPad(oldDate.getMonth() + 1)) + '-' + leftZeroPad(oldDate.getDate());
+        var newTime = leftZeroPad(oldDate.getHours()) + ":" + leftZeroPad(oldDate.getMinutes());
+        var newDateTime = newDate + 'T' + newTime;
+        return newDateTime;
+    }
+
+    // 3 -> 03, 02 -> 02
+    function leftZeroPad(target) {
+        if (target.toString().length < 2) {
+            return '0' + target;
+        } else {
+            return target;
+        }
+    }
+
+    // 페이지 로딩시 동작
     $(
         // 페이지 로딩시 고정된 대여장소 로딩
         getLocations(function (data) {
@@ -69,38 +155,34 @@
             }
         }),
 
+        // 오늘 날짜에 해당하는 이벤트 불러오기
         getEvents('190228', function (data) {
-            console.log(JSON.stringify(data));
+            drawEvents(data);
+        }),
 
-            var timeRows = document.getElementById("time-events").children;
-            for (var i = 0; i < data.length; i++) {
-                var roomId = data[i].location.id;
-                var lessorName = document.createTextNode(data[i].lessorName);
+        setCurrentDateTime()
+    );
 
-                var timeEventElement = document.createElement("div");
-                timeEventElement.classList.add("d-flex", "flex-column", "time-event");
-                var lessorNameElement = document.createElement("div");
-                lessorNameElement.classList.add("time-lessor");
-                var startDateTimeElement = document.createElement("div");
-                startDateTimeElement.classList.add("time-start-date");
-                var endDateTimeElement = document.createElement("div");
-                endDateTimeElement.classList.add("time-end-date");
+    $("#createEvent").submit(function (e) {
 
-                timeEventElement.appendChild(lessorNameElement);
-                timeEventElement.appendChild(startDateTimeElement);
-                timeEventElement.appendChild(endDateTimeElement);
+        e.preventDefault(); // avoid to execute the actual submit of the form.
 
-                lessorNameElement.appendChild(lessorName);
+        var form = $(this);
+        var url = form.attr('action');
 
-                timeRows[roomId - 1].appendChild(timeEventElement);
-            }
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+        }).done(function (data) {
+            console.log("SUCCESS CREATE EVENT");
+            location.reload(); // refresh(F5)
+        }).fail(function (error) {
+            // console.log(JSON.stringify(error));
+            alert(error.message);
+        });
 
-            // <!--<div class="d-flex flex-column time-event">-->
-            //      <!--<div>이름</div>-->
-            //      <!--<div>시간</div>-->
-            // <!--</div>-->
-        })
-    )
+    });
 </script>
 <script src="/js/bootstrap.js"></script>
 <script src="/js/bootstrap.bundle.js"></script>
