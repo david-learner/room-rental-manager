@@ -8,31 +8,48 @@
 <link rel="stylesheet" href="/css/bootstrap.css">
 <link rel="stylesheet" href="/css/bootstrap-grid.css">
 <link rel="stylesheet" href="/css/bootstrap-reboot.css">
-<script
-        src="http://code.jquery.com/jquery-3.3.1.js"
-        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-        crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/css/jquery-ui.css">
+<!-- js파일은 최대한 늦게 로딩하는 게 속도상 이득인데, jquery의 기능 일부가 page loading때 필요해서 상단에 삽입 -->
+<script src="http://code.jquery.com/jquery-3.2.1.js"></script>
+<script src="/js/jquery-ui.js"></script>
 <body>
 <header class="d-flex flex-row justify-content-center">
-    <div class="d-flex flex-column w-30">
+    <div class="d-flex flex-column col-4">
         <div class="d-flex flex-column">
             <div class="text-center display-3">현재시간</div>
             <div class="text-center display-3" id="current-time-view"></div>
         </div>
         <form id="createEvent" action="/api/events" method="post" class="d-flex flex-column">
-            <input type="text" placeholder="대여자 성명" name="lessorname"/>
+            <div class="d-flex flex-row align-baseline">
+                <label class="col-3 p-0">이름</label>
+                <input class="col-9" type="text" placeholder="대여자 성명" name="lessorname"/>
+            </div>
             <!--<input type="text" placeholder="연습실 번호" name="roomno"/>-->
-            <select name="roomno" id="room-list"></select>
-            <input type="datetime-local" id="start-date" name="startdatetime"/>
-            <input type="datetime-local" id="end-date" name="enddatetime"/>
+            <div class="d-flex flex-row align-baseline">
+                <label class="col-3 p-0">연습실</label>
+                <select class="col-9" name="roomno" id="room-list"></select>
+            </div>
+            <div class="d-flex flex-row align-baseline">
+                <label class="col-3 p-0">시작시간</label>
+                <input class="col" type="datetime-local" id="start-date" name="startdatetime"/>
+            </div>
+            <div class="d-flex flex-row align-baseline">
+                <label class="col-3 p-0">종료시간</label>
+                <input class="col" type="datetime-local" id="end-date" name="enddatetime"/>
+            </div>
+
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row">
-                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(30)">30분</button>
-                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(60)">1시간</button>
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(30)">30분
+                    </button>
+                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(60)">1시간
+                    </button>
                 </div>
                 <div class="d-flex flex-row">
-                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(90)">1시간30분</button>
-                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(120)">2시간</button>
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(90)">1시간30분
+                    </button>
+                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(120)">2시간
+                    </button>
                 </div>
             </div>
             <input type="submit" class="btn btn-primary mt-1" value="연습실 대여 신청"/>
@@ -79,7 +96,7 @@
         var roomlist = document.getElementById("room-list");
         for (var index in data) {
             var option = document.createElement("OPTION");
-            option.innerText = data[index].roomNo + ' : ' + data[index].pianoCategory +', '+data[index].pianoCount;
+            option.innerText = data[index].roomNo + ' : ' + data[index].pianoCategory + ', ' + data[index].pianoCount;
             option.value = data[index].roomNo;
             roomlist.options.add(option);
         }
@@ -98,8 +115,8 @@
             var roomId = data[i].location.id;
             var lessorNameTextNode = document.createTextNode(data[i].lessorName);
 
-            var startDateTimeText = startDateTime.getHours() + ':' + startDateTime.getMinutes();
-            var endDateTimeText = endDateTime.getHours() + ':' + endDateTime.getMinutes();
+            var startDateTimeText = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
+            var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
             var dateTimeNode = document.createTextNode(startDateTimeText + '~' + endDateTimeText);
 
 
@@ -125,7 +142,7 @@
         var today = new Date();
         return zeroFilledDateTime(today);
     }
-    
+
     function setCurrentDateTime() {
         $('#start-date').val(getCurrentDateTime());
     }
@@ -151,6 +168,7 @@
         var endDateTime = new Date();
         endDateTime.setTime(startDateTime.getTime() + (minutes * 60 * 1000));
         $('#end-date').val(zeroFilledDateTime(endDateTime));
+        $('#end-date').effect("highlight", {}, 1500);
     }
 
     function zeroFilledDateTime(oldDate) {
@@ -167,6 +185,12 @@
         } else {
             return target;
         }
+    }
+
+    // 2019-02-28 => 190228
+    function getDays() {
+        var today = new Date();
+        return today.getFullYear().toString().substring(2, 4) + leftZeroPad(today.getMonth() + 1) + leftZeroPad(today.getDate());
     }
 
     // 페이지 로딩시 동작
@@ -195,7 +219,7 @@
         }),
 
         // 오늘 날짜에 해당하는 이벤트 불러오기
-        getEvents('190228', function (data) {
+        getEvents(getDays(), function (data) {
             drawEvents(data);
         }),
 
