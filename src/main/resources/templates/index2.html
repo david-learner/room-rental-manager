@@ -13,24 +13,29 @@
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
 <body>
-<header>
-    <div class="d-flex flex-row justify-content-center">
-        <form id="createEvent" action="/api/events" method="post" class="d-flex flex-column w-30">
+<header class="d-flex flex-row justify-content-center">
+    <div class="d-flex flex-column w-30">
+        <div class="d-flex flex-column">
+            <div class="text-center display-3">현재시간</div>
+            <div class="text-center display-3" id="current-time-view"></div>
+        </div>
+        <form id="createEvent" action="/api/events" method="post" class="d-flex flex-column">
             <input type="text" placeholder="대여자 성명" name="lessorname"/>
-            <input type="text" placeholder="연습실 번호" name="roomno"/>
+            <!--<input type="text" placeholder="연습실 번호" name="roomno"/>-->
+            <select name="roomno" id="room-list"></select>
             <input type="datetime-local" id="start-date" name="startdatetime"/>
             <input type="datetime-local" id="end-date" name="enddatetime"/>
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row">
-                    <button type="button" class="col" onclick="setEndDateTime(30)">30분</button>
-                    <button type="button" class="col" onclick="setEndDateTime(60)">1시간</button>
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(30)">30분</button>
+                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(60)">1시간</button>
                 </div>
                 <div class="d-flex flex-row">
-                    <button type="button" class="col" onclick="setEndDateTime(90)">1시간30분</button>
-                    <button type="button" class="col" onclick="setEndDateTime(120)">2시간</button>
+                    <button type="button" class="col btn btn-secondary mt-1 mr-1" onclick="setEndDateTime(90)">1시간30분</button>
+                    <button type="button" class="col btn btn-secondary mt-1 ml-1" onclick="setEndDateTime(120)">2시간</button>
                 </div>
             </div>
-            <input type="submit" value="연습실 대여 신청"/>
+            <input type="submit" class="btn btn-primary mt-1" value="연습실 대여 신청"/>
         </form>
     </div>
 </header>
@@ -51,6 +56,8 @@
 <footer></footer>
 </body>
 <script>
+    var locations = [];
+
     function getLocations(callback) {
         $.ajax({
             type: 'GET',
@@ -68,8 +75,18 @@
         }).done(callback);
     }
 
+    function setLocationsToDropdownMenu(data) {
+        var roomlist = document.getElementById("room-list");
+        for (var index in data) {
+            var option = document.createElement("OPTION");
+            option.innerText = data[index].roomNo + ' : ' + data[index].pianoCategory +', '+data[index].pianoCount;
+            option.value = data[index].roomNo;
+            roomlist.options.add(option);
+        }
+    }
+
     function drawEvents(data) {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
 
         var timeRows = document.getElementById("time-events").children;
         for (var i = 0; i < data.length; i++) {
@@ -104,10 +121,29 @@
         }
     }
 
-    function setCurrentDateTime() {
+    function getCurrentDateTime() {
         var today = new Date();
-        var currentDateTime = zeroFilledDateTime(today);
-        $('#start-date').val(currentDateTime);
+        return zeroFilledDateTime(today);
+    }
+    
+    function setCurrentDateTime() {
+        $('#start-date').val(getCurrentDateTime());
+    }
+
+    function setCurrentTime() {
+        var currentTime = new Date();
+        var currentTimeText = leftZeroPad(convert12hours(currentTime.getHours())) + ':' + leftZeroPad(currentTime.getMinutes()) + ':' + leftZeroPad(currentTime.getSeconds());
+        $('#current-time-view').text(currentTimeText);
+        setTimeout(setCurrentTime, 500);
+    }
+
+    function convert12hours(hour) {
+        if (hour % 12 == 0) {
+            return hour;
+        }
+        if ((hour = hour % 12) > 0) {
+            return hour;
+        }
     }
 
     function setEndDateTime(minutes) {
@@ -140,6 +176,7 @@
             // console.log(JSON.stringify(data));
 
             for (var i in data) {
+                locations.push(data[i]);
                 // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
                 var location = document.createElement("div");
                 location.classList.add("time-location");
@@ -153,6 +190,8 @@
                 event.classList.add("d-flex", "flex-row", "time-row");
                 document.getElementById("time-events").appendChild(event);
             }
+
+            setLocationsToDropdownMenu(data);
         }),
 
         // 오늘 날짜에 해당하는 이벤트 불러오기
@@ -162,6 +201,9 @@
 
         setCurrentDateTime()
     );
+
+    //body가 load되었을 때 실행
+    window.onload = setCurrentTime();
 
     $("#createEvent").submit(function (e) {
 
