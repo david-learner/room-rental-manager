@@ -53,17 +53,21 @@ public class EventTest {
 
     @Test
     public void isOverlap() {
-        LocalDateTime firstEventStartDateTime = LocalDateTime.of(2019, 3, 8, 9, 00);
-        LocalDateTime firstEventEndDateTime = LocalDateTime.of(2019, 3, 8, 10, 00);
-        LocalDateTime endDateTime = LocalDateTime.of(2019, 3, 8, 11, 00);
-        LocalDateTime notOverlappedStartDateTime = LocalDateTime.of(2019, 3, 8, 10, 00);
-        LocalDateTime overlappedStartDateTime = LocalDateTime.of(2019, 3, 8, 9, 59);
+        LocalDateTime previousEventStartDateTime = LocalDateTime.of(2019, 3, 8, 10, 00);
+        LocalDateTime previousEventEndDateTime = LocalDateTime.of(2019, 3, 8, 12, 00);
+        LocalDateTime addEventStartDateTime = LocalDateTime.of(2019, 3, 8, 12, 00);
+        LocalDateTime addEventEndDateTime = LocalDateTime.of(2019, 3, 8, 14, 00);
+        LocalDateTime nextEventStartDateTime = LocalDateTime.of(2019, 3, 8, 14, 00);
+        LocalDateTime nextEventEndDateTime = LocalDateTime.of(2019, 3, 8, 16, 00);
+        LocalDateTime nextEventOverlapStartDateTime = LocalDateTime.of(2019, 3, 8, 13, 00);
+        LocalDateTime nextEventOverlapEndDateTime = LocalDateTime.of(2019, 3, 8, 15, 00);
 
-        Event firstEvent = new Event(location401, "황태원", firstEventStartDateTime, firstEventEndDateTime);
-        Event notOverlappedEvent = new Event(location401, "김화원", notOverlappedStartDateTime, endDateTime);
-        Event overlappedEvent = new Event(location401, "김화원", overlappedStartDateTime, endDateTime);
+        Event previousEvent = new Event(location401, "황태원", previousEventStartDateTime, previousEventEndDateTime);
+        Event addEvent = new Event(location401, "김화원", addEventStartDateTime, addEventEndDateTime);
+        Event nextEvent = new Event(location401, "김화원", nextEventStartDateTime, nextEventEndDateTime);
+        Event nextOverlapEvent = new Event(location401, "김화원", nextEventOverlapStartDateTime, nextEventOverlapEndDateTime);
 
-        assertThat(firstEvent.isOverlap(notOverlappedEvent)).isFalse();
-        assertThat(firstEvent.isOverlap(overlappedEvent)).isTrue();
+        assertThat(addEvent.isOverlap(previousEvent, nextEvent)).isFalse();
+        assertThat(addEvent.isOverlap(previousEvent, nextOverlapEvent)).isTrue();
     }
 }

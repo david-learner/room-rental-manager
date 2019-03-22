@@ -300,7 +300,7 @@
                     $("#update-delete-form input[name='id']").val(eventId); // 1
                     $("#update-delete-form input[name='lessorname']").val(filteredEvent[0].lessorName); // 황태원
                     $("#update-delete-form select[name='roomno']").val(filteredEvent[0].location.roomNo); // 401
-                    $("#update-delete-form input[name='startdatetime']").val(filteredEvent[0].startDateTime.substring(0, 16));
+                    $("#update-delete-form input[name='startdatetime']").val(filteredEvent[0].startDateTime.substring(0, 16)); // 2019-02-28T12:34:00 -> 2019-02-28T12:34
                     $("#update-delete-form input[name='enddatetime']").val(filteredEvent[0].endDateTime.substring(0, 16));
                 }
             }

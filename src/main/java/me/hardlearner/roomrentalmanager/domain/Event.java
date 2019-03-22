@@ -89,11 +89,17 @@ public class Event implements Comparable<Event> {
         this.endDateTime = dto.getEnddatetime();
     }
 
-    public boolean isOverlap(Event secondEvent) {
-        if (!this.location.equals(secondEvent.location)) {
+    public boolean isOverlap(Event previousEvent, Event nextEvent) {
+        if (!this.location.equals(previousEvent.location)) {
             throw new IllegalStateException("서로 다른 장소입니다");
         }
-        return this.endDateTime.isAfter(secondEvent.startDateTime);
+        if (previousEvent.getEndDateTime().isAfter(this.startDateTime)) {
+            return true;
+        }
+        if (nextEvent.getStartDateTime().isBefore(this.endDateTime)) {
+            return true;
+        }
+        return false;
     }
 
     @Override
