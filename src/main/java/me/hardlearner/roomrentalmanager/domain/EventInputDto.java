@@ -36,10 +36,10 @@ public class EventInputDto {
         return startdatetime;
     }
 
-    public void setStartdatetime(LocalDateTime enddatetime) {
+    public void setStartdatetime(LocalDateTime startdatetime) {
 //        System.out.println("startDate is converting");
 //        this.startdatetime = LocalDateTime.parse(startdatetime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));;
-        this.startdatetime = enddatetime;
+        this.startdatetime = startdatetime;
     }
 
     public LocalDateTime getEnddatetime() {
