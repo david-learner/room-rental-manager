@@ -1,10 +1,9 @@
 package me.hardlearner.roomrentalmanager.controller;
 
+import me.hardlearner.roomrentalmanager.EventService;
 import me.hardlearner.roomrentalmanager.domain.Event;
 import me.hardlearner.roomrentalmanager.domain.EventInputDto;
 import me.hardlearner.roomrentalmanager.domain.Location;
-import me.hardlearner.roomrentalmanager.domain.PianoCategory;
-import me.hardlearner.roomrentalmanager.exception.EventNotFoundException;
 import me.hardlearner.roomrentalmanager.repository.EventRepository;
 import me.hardlearner.roomrentalmanager.repository.LocationRepository;
 import org.slf4j.Logger;
@@ -14,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -27,56 +23,42 @@ public class EventController {
     private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     @Autowired
-    EventRepository eventRepository;
-
-    @Autowired
-    LocationRepository locationRepository;
+    EventService eventService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEvents(@PathVariable Long id) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("event id : " + id + "is wrong"));
-        log.debug("event : " + event.toString());
-        return ResponseEntity.ok(event);
+    public ResponseEntity<Event> getEvent(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.getEvent(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Event>> getEvents() {
-        List<Event> events = eventRepository.findAll();
-        return ResponseEntity.ok(events);
-//        return ResponseEntity.ok(null);
+    public ResponseEntity<List<Event>> getEvent() {
+        return ResponseEntity.ok(eventService.getAllEvents());
     }
 
     @GetMapping("/days/{day}")
-    public ResponseEntity<List<Event>> getEventsOfDay(@PathVariable String day) {
-        LocalDate localDate = LocalDate.parse(day, DateTimeFormatter.ofPattern("yyMMdd"));
-        List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
-        Collections.sort(events);
-        return ResponseEntity.ok(events);
+    public ResponseEntity<List<Event>> getEventsOfDay(@PathVariable String date) {
+        return ResponseEntity.ok(eventService.getEventsWhereDate(date));
     }
 
     @PostMapping
     public ResponseEntity<Event> createEvent(EventInputDto eventInputDto) {
-        Location location = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(IllegalArgumentException::new);
-        log.debug("eventInputDto start : " + eventInputDto.getStartdatetime());
-        Event event = eventRepository.save(eventInputDto.toEvent(location));
-        log.debug("event start : " + event.getStartDateTime());
-        URI createdUri = linkTo(EventController.class).slash(event.getId()).toUri();
-        return ResponseEntity.created(createdUri).body(event);
+//        Location location = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(IllegalArgumentException::new);
+//        log.debug("eventInputDto start : " + eventInputDto.getStartdatetime());
+//        Event event = eventRepository.save(eventInputDto.toEvent(location));
+//        log.debug("event start : " + event.getStartDateTime());
+        Event createdEvent = eventService.createEvent(eventInputDto);
+        URI createdUri = linkTo(EventController.class).slash(createdEvent.getId()).toUri();
+        return ResponseEntity.created(createdUri).body(createdEvent);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventRepository.deleteById(id);
+        eventService.deleteEvent(id);
         return ResponseEntity.ok(null);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(EventInputDto eventInputDto, @PathVariable Long id) {
-        log.debug("update api called");
-        Location dbLocation = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(NullPointerException::new);
-        Event dbEvent = eventRepository.findById(id).orElseThrow(EventNotFoundException::new);
-        dbEvent.update(eventInputDto, dbLocation);
-        Event updatedEvent = eventRepository.save(dbEvent);
-        return ResponseEntity.ok(updatedEvent);
+        return ResponseEntity.ok(eventService.updateEvent(eventInputDto, id));
     }
 }

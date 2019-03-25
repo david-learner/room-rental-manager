@@ -59,4 +59,14 @@ public class EventRepositoryTest {
         Event event = eventRepository.getOne(1L);
         System.out.println(event.getStartDateTime());
     }
+
+    @Test
+    public void getEventEqualDateAndLocation() {
+        LocalDateTime startDateTime = LocalDateTime.of(2019, 03, 13, 12, 34);
+        LocalDate date20190228 = startDateTime.toLocalDate();
+        int roomNo = 402;
+
+        List<Event> events = eventRepository.findAllByStartDateTimeEqualsAndLocationEquals(date20190228.toString(), roomNo);
+        assertThat(events.size()).isEqualTo(1);
+    }
 }
