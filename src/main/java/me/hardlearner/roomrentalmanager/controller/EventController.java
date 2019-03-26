@@ -3,9 +3,6 @@ package me.hardlearner.roomrentalmanager.controller;
 import me.hardlearner.roomrentalmanager.EventService;
 import me.hardlearner.roomrentalmanager.domain.Event;
 import me.hardlearner.roomrentalmanager.domain.EventInputDto;
-import me.hardlearner.roomrentalmanager.domain.Location;
-import me.hardlearner.roomrentalmanager.repository.EventRepository;
-import me.hardlearner.roomrentalmanager.repository.LocationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +28,11 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Event>> getEvent() {
+    public ResponseEntity<List<Event>> getEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    @GetMapping("/days/{day}")
+    @GetMapping("/days/{date}")
     public ResponseEntity<List<Event>> getEventsOfDay(@PathVariable String date) {
         return ResponseEntity.ok(eventService.getEventsWhereDate(date));
     }

@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,7 +69,14 @@ public class EventTest {
         Event nextEvent = new Event(location401, "김화원", nextEventStartDateTime, nextEventEndDateTime);
         Event nextOverlapEvent = new Event(location401, "김화원", nextEventOverlapStartDateTime, nextEventOverlapEndDateTime);
 
-        assertThat(addEvent.isOverlap(previousEvent, nextEvent)).isFalse();
-        assertThat(addEvent.isOverlap(previousEvent, nextOverlapEvent)).isTrue();
+        List<Event> events = new ArrayList<>();
+        events.add(nextEvent);
+        events.add(previousEvent);
+        assertThat(addEvent.isOverlap(events)).isFalse();
+
+        events.clear();
+        events.add(nextOverlapEvent);
+        events.add(previousEvent);
+        assertThat(addEvent.isOverlap(events)).isTrue();
     }
 }

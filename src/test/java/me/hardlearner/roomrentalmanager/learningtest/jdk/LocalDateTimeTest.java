@@ -1,5 +1,6 @@
 package me.hardlearner.roomrentalmanager.learningtest.jdk;
 
+import org.apache.tomcat.jni.Local;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
@@ -23,5 +24,12 @@ public class    LocalDateTimeTest {
 
         assertThat(prev.isBefore(next)).isTrue();
         assertThat(next.isAfter(prev)).isTrue();
+    }
+
+    @Test
+    public void withYear() {
+        LocalDateTime year2019 = LocalDateTime.of(2019, 02, 28, 0, 0, 0);
+
+        System.out.println(year2019.withYear(2018).toString());
     }
 }

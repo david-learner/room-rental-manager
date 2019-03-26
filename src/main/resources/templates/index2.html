@@ -20,7 +20,7 @@
             <div class="text-center display-4">현재시간</div>
             <div class="text-center display-4" id="current-time-view"></div>
         </div>
-        <form id="createEvent" action="/api/events" method="post" class="d-flex flex-column">
+        <form id="eventForm" class="d-flex flex-column">
 
             <label class="mb-0 mt-1">이름</label>
             <input class="" type="text" placeholder="대여자 성명" name="lessorname"/>
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <!-- todo 위의 데이터가 다 채워져야 submit button 활성화 -->
-            <input type="submit" class="btn btn-primary mt-1" value="연습실 대여 신청"/>
+            <button type="button" onclick="create(event)" class="btn btn-primary mt-1">연습실 대여 신청</button>
         </form>
     </div>
 </header>
@@ -91,8 +91,11 @@
                 <input class="" type="datetime-local" name="enddatetime"/>
 
                 <div class="d-flex justify-content-center">
-                    <button type="button" id="update" onclick="updateEvent(event)" class="btn btn-primary mr-2 mt-2">수정</button>
-                    <button type="button" id="delete" class="btn btn-danger ml-2 mt-2">삭제</button>
+                    <button type="button" id="update" onclick="updateEvent(event)" class="btn btn-primary mr-2 mt-2">
+                        수정
+                    </button>
+                    <button type="button" id="delete" onclick="deleteEvent(event)" class="btn btn-danger ml-2 mt-2">삭제
+                    </button>
                 </div>
             </div>
         </form>
@@ -121,6 +124,26 @@
         }).done(callback);
     }
 
+    function create(event) {
+        event.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $('#eventForm');
+        var url = '/api/events';
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+        }).done(function (data) {
+            console.log("SUCCESS CREATE EVENT");
+            location.reload(); // refresh(F5)
+        }).fail(function (error) {
+            // console.log(JSON.stringify(error));
+            alert(error.responseJSON.message);
+        });
+    }
+
+
     function updateEvent(event) {
         event.preventDefault();
         var form = $('#update-delete-form');
@@ -128,10 +151,29 @@
         console.log("PUT /api/events/" + id);
         $.ajax({
             type: 'PUT',
-            url: '/api/events/'+id,
+            url: '/api/events/' + id,
             data: form.serialize(),
-            success: function(data) {
-                alert("수정 성공");
+        }).done(function (data) {
+            console.log("수정 성공");
+            location.reload(); // refresh(F5)
+        }).fail(function (error) {
+            // console.log(JSON.stringify(error));
+            alert(error.responseJSON.message);
+        });
+    }
+
+    function deleteEvent(event) {
+        event.preventDefault();
+        var form = $('#update-delete-form');
+        var id = $("#update-delete-form input[name='id']").val();
+        console.log("DELETE /api/events/" + id);
+        $.ajax({
+            type: 'DELETE',
+            url: '/api/events/' + id,
+            data: form.serialize(),
+            success: function (data) {
+                alert("삭제 성공");
+                // 부분 갱신으로 변경하기
                 location.reload();
             }
         });
@@ -332,76 +374,24 @@
             setLocationsToDropdownMenu(data);
         }),
 
-        // 오늘 날짜에 해당하는 이벤트 불러오기
-        getEvents(getDays(), function (data) {
-            for (var i in data) {
-                events.push(data[i]);
-            }
-            drawEvents(data);
-        }),
-
         setCurrentDateTime()
     );
 
     //body가 load되었을 때 실행
     window.onload = function () {
         setCurrentTime();
+        // 오늘 날짜에 해당하는 이벤트 불러오기
+        getEvents(getDays(), function (data) {
+            for (var i in data) {
+                events.push(data[i]);
+            }
+            drawEvents(data);
+        });
     };
 
     // ajax
-    $("#createEvent").submit(function (e) {
 
-        e.preventDefault(); // avoid to execute the actual submit of the form.
 
-        var form = $(this);
-        var url = form.attr('action');
-
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: form.serialize(), // serializes the form's elements.
-        }).done(function (data) {
-            console.log("SUCCESS CREATE EVENT");
-            location.reload(); // refresh(F5)
-        }).fail(function (error) {
-            // console.log(JSON.stringify(error));
-            alert(error.message);
-        });
-
-    });
-
-    $('#delete').on('click', function (event) {
-        event.preventDefault();
-        var form = $('#update-delete-form');
-        var id = $("#update-delete-form input[name='id']").val();
-        console.log("DELETE /api/events/" + id);
-        $.ajax({
-            type: 'DELETE',
-            url: '/api/events/' + id,
-            data: form.serialize(),
-            success: function (data) {
-                alert("삭제 성공");
-                // 부분 갱신으로 변경하기
-                location.reload();
-            }
-        });
-    });
-
-    // $('#update').on('click', function(event) {
-    //     event.preventDefault();
-    //     var form = $('#update-delete-form');
-    //     var id = $("#update-delete-form input[name='id']").val();
-    //     console.log("PUT /api/events/" + id);
-    //     $.ajax({
-    //         type: 'PUT',
-    //         url: '/api/events/'+id,
-    //         data: form.serialize(),
-    //         success: function(data) {
-    //             alert("수정 성공");
-    //             location.reload();
-    //         }
-    //     });
-    // });
 </script>
 <script src="/js/bootstrap.js"></script>
 <script src="/js/bootstrap.bundle.js"></script>

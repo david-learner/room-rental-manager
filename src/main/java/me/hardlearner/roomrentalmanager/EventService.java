@@ -48,30 +48,35 @@ public class EventService {
         // 이벤트 날짜 && 장소 일치하는 애들 구해오기
         List<Event> events = eventRepository.findAllByStartDateTimeEqualsAndLocationEquals(date.toString(), roomNo);
 
-        // 구해온 이벤트들 시간 빠른 순으로 정렬
-        Collections.sort(events);
-
         Event inputEvent = eventInputDto.toEvent(locationRepository.findByRoomNo(roomNo).orElseThrow(() -> new IllegalArgumentException("wrong room number")));
         // 이벤트들과 새롭게 만들어질 이벤트의 시간 겹치는지 확인
-        for (int i = 0; i < events.size()-1; i++) {
-            if(inputEvent.isOverlap(events.get(i), events.get(i+1))) {
-                throw new IllegalStateException("대여시간이 겹칩니다");
-            }
+        if (inputEvent.isOverlap(events)) {
+            throw new IllegalStateException("대여시간이 겹칩니다");
         }
 
-        // 안 겹치면 이벤트 생성 후 저장
         return eventRepository.save(inputEvent);
-    }
-
-    public void deleteEvent(Long id) {
-        eventRepository.deleteById(id);
     }
 
     public Event updateEvent(EventInputDto eventInputDto, Long id) {
         Location dbLocation = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(NullPointerException::new);
         Event dbEvent = eventRepository.findById(id).orElseThrow(EventNotFoundException::new);
         dbEvent.update(eventInputDto, dbLocation);
+        List<Event> events = eventRepository.findAllByStartDateTimeEqualsAndLocationEquals(dbEvent.getStartDateTime().toLocalDate().toString(), dbLocation.getRoomNo());
+        // 이벤트 리스트 들고와서 업데이트될 애 빼고 나머지 애들이랑 비교해서 겹치는지 확인
+        for (Event event : events) {
+            if (event.getId() == dbEvent.getId()) {
+                events.remove(event);
+                break;
+            }
+        }
+        if (dbEvent.isOverlap(events)) {
+            throw new IllegalStateException("대여시간이 겹칩니다");
+        }
         return eventRepository.save(dbEvent);
+    }
+
+    public void deleteEvent(Long id) {
+        eventRepository.deleteById(id);
     }
 
 

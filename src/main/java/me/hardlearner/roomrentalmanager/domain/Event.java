@@ -2,6 +2,8 @@ package me.hardlearner.roomrentalmanager.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 public class Event implements Comparable<Event> {
@@ -81,7 +83,6 @@ public class Event implements Comparable<Event> {
     }
 
 
-
     public void update(EventInputDto dto, Location location) {
         this.location = location;
         this.lessorName = dto.getLessorname();
@@ -89,17 +90,38 @@ public class Event implements Comparable<Event> {
         this.endDateTime = dto.getEnddatetime();
     }
 
-    public boolean isOverlap(Event previousEvent, Event nextEvent) {
-        if (!this.location.equals(previousEvent.location)) {
+    public boolean isOverlap(List<Event> events) {
+        if (events.isEmpty()) {
+            return false;
+        }
+
+        boolean overlap = false;
+        for (Event event : events) {
+            if (this.isBefore(event)) {
+                overlap = overlap(this, event);
+            }
+            if (!this.isBefore(event)) {
+                overlap = overlap(event, this);
+            }
+            if (overlap) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean overlap(Event previous, Event nexdt) {
+        if (!previous.getLocation().equals(nexdt.getLocation())) {
             throw new IllegalStateException("서로 다른 장소입니다");
         }
-        if (previousEvent.getEndDateTime().isAfter(this.startDateTime)) {
-            return true;
-        }
-        if (nextEvent.getStartDateTime().isBefore(this.endDateTime)) {
+        if (!previous.getStartDateTime().isBefore(nexdt.getStartDateTime()) || previous.getEndDateTime().isAfter(nexdt.getStartDateTime())) {
             return true;
         }
         return false;
+    }
+
+    private boolean isBefore(Event event) {
+        return this.startDateTime.isBefore(event.getStartDateTime());
     }
 
     @Override
