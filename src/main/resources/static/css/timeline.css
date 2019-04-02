@@ -1,11 +1,20 @@
+header {
+    margin-bottom: 10px;
+}
+
 .border-default {
     border: 1px solid gray !important;
 }
 
 .time-event, .time-location {
     height: 80px;
-    width: 120px;
+    width: 100px;
+    flex-shrink: 0;
     border: 1px solid black;
+}
+
+.time-event {
+    width: 60px;
 }
 
 .time-row {
@@ -15,5 +24,14 @@
 
 .time-now {
     background-color: #D6E6F5;
+}
+
+#time-events {
+    /*overflow: scroll;*/
+    width: auto;
+}
+
+#time-locations {
+
 }
 

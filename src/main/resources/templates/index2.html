@@ -20,7 +20,7 @@
             <div class="text-center display-4">현재시간</div>
             <div class="text-center display-4" id="current-time-view"></div>
         </div>
-        <form id="eventForm" class="d-flex flex-column">
+        <form name="eventInputForm" id="eventForm" class="d-flex flex-column">
 
             <label class="mb-0 mt-1">이름</label>
             <input class="" type="text" placeholder="대여자 성명" name="lessorname"/>
@@ -126,7 +126,9 @@
 
     function create(event) {
         event.preventDefault(); // avoid to execute the actual submit of the form.
-
+        if (!checkEventInputForm()) {
+            return false;
+        }
         var form = $('#eventForm');
         var url = '/api/events';
 
@@ -179,6 +181,23 @@
         });
     }
 
+    function checkEventInputForm() {
+        var name = document.eventInputForm.lessorname.value;
+        var endDateTime = document.eventInputForm.enddatetime.value;
+        if (name == "") {
+            alert("이름을 입력해주세요");
+            name.focus();
+            return false;
+        }
+
+        if (endDateTime == "") {
+            alert("대여시간을 입력해주세요");
+            endDateTime.focus();
+            return false;
+        }
+        return true;
+    }
+
     function setLocationsToDropdownMenu(data) {
         var roomlist = document.getElementById("room-list");
         var locationsUpdateDeleteForm = document.getElementById("locations-update-delete");
@@ -201,6 +220,7 @@
 
     function isNow(startDateTime, endDateTime) {
         var now = new Date();
+        // 분단위까지만 비교하기, 초단위까지 비교하니깐 동일한 시간(분)에서 체크 안 됌
         if (now >= startDateTime && now <= endDateTime) {
             return true;
         }
@@ -224,7 +244,13 @@
 
             var startDateTimeText = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
             var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
-            var dateTimeNode = document.createTextNode(startDateTimeText + '~' + endDateTimeText);
+            // var dateTimeNode = document.createTextNode(startDateTimeText + '~' + endDateTimeText);
+            var startDateTimeNode = document.createElement("div");
+            var endDateTimeNode = document.createElement("div");
+            startDateTimeNode.textContent = startDateTimeText;
+            endDateTimeNode.textContent = endDateTimeText;
+            var dateTimeNode = document.createElement("div");
+            dateTimeNode.append(startDateTimeNode, endDateTimeNode);
 
             var timeEventElement = document.createElement("div");
             timeEventElement.classList.add("d-flex", "flex-column", "time-event");
