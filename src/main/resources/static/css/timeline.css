@@ -5,11 +5,15 @@
 .time-event, .time-location {
     height: 80px;
     width: 120px;
-    border: 1px solid red;
+    border: 1px solid black;
 }
 
 .time-row {
     /* 데이터가 없어도 공간확보를 위해 */
     height: 80px;
+}
+
+.time-now {
+    background-color: #D6E6F5;
 }
 

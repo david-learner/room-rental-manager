@@ -199,6 +199,14 @@
         }
     }
 
+    function isNow(startDateTime, endDateTime) {
+        var now = new Date();
+        if (now >= startDateTime && now <= endDateTime) {
+            return true;
+        }
+        return false;
+    }
+
     function drawEvents(data) {
         // console.log(JSON.stringify(data));
 
@@ -220,6 +228,11 @@
 
             var timeEventElement = document.createElement("div");
             timeEventElement.classList.add("d-flex", "flex-column", "time-event");
+            // 만약 지금 진행중인 이벤트면 백그라운드 색 넣기
+            if(isNow(startDateTime, endDateTime)) {
+                timeEventElement.classList.add("time-now");
+
+            }
             timeEventElement.setAttribute("onclick", "loadUpdateDeleteForm(event)");
 
             var eventIdElement = document.createElement("div");
@@ -249,11 +262,6 @@
 
             // event div에 내용 추가하기
             timeEventElement.append(eventIdElement, locationIdElement, locationNumberElement, lessorNameElement, dateTimeElement);
-            // timeEventElement.appendChild(eventIdElement);
-            // timeEventElement.appendChild(locationIdElement);
-            // timeEventElement.appendChild(locationNumberElement);
-            // timeEventElement.appendChild(lessorNameElement);
-            // timeEventElement.appendChild(dateTimeElement);
 
             timeRows[locationId - 1].appendChild(timeEventElement);
         }
@@ -349,6 +357,38 @@
         });
     }
 
+    Date.prototype.toDatetimeLocal =
+        function toDatetimeLocal() {
+            var
+                date = this,
+                ten = function (i) {
+                    return (i < 10 ? '0' : '') + i;
+                },
+                YYYY = date.getFullYear(),
+                MM = ten(date.getMonth() + 1),
+                DD = ten(date.getDate()),
+                HH = ten(date.getHours()),
+                II = ten(date.getMinutes()),
+                SS = ten(date.getSeconds())
+            ;
+            return YYYY + '-' + MM + '-' + DD + 'T' +
+                HH + ':' + II + ':' + SS;
+        };
+
+    Date.prototype.fromDatetimeLocal = (function (BST) {
+        // BST should not be present as UTC time
+        return new Date(BST).toISOString().slice(0, 16) === BST ?
+            // if it is, it needs to be removed
+            function () {
+                return new Date(
+                    this.getTime() +
+                    (this.getTimezoneOffset() * 60000)
+                ).toISOString();
+            } :
+            // otherwise can just be equivalent of toISOString
+            Date.prototype.toISOString;
+    }('2006-06-06T06:06'));
+
     // 페이지 로딩시 동작
     $(
         // 페이지 로딩시 고정된 대여장소 로딩
@@ -360,9 +400,14 @@
                 // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
                 var location = document.createElement("div");
                 location.classList.add("time-location");
-                var roomNo = data[i].roomNo;
-                var locationNo = document.createTextNode(roomNo);
-                location.append(locationNo);
+                var locationNo = document.createElement("div");
+                locationNo.append(document.createTextNode(data[i].roomNo));
+                var pianoInfo = document.createElement("div");
+                var pianoCategory = document.createTextNode(data[i].pianoCategory);
+                var pianoCount = document.createTextNode(data[i].pianoCount);
+                var divider = document.createTextNode(" / ");
+                pianoInfo.append(pianoCategory, divider, pianoCount);
+                location.append(locationNo, pianoInfo);
                 document.getElementById("time-locations").appendChild(location);
 
                 // id가 time-events인 태그 아래에 각 방의 대여 기록을 나타내는 div태그 삽입
