@@ -113,11 +113,13 @@ function setLocationsToDropdownMenu(data) {
 }
 
 function isNow(startDateTime, endDateTime) {
+    // 분단위까지만 비교하기, 초단위까지 비교하니깐 동일한 시간(분)에서 체크 안 됌
     var now = new Date().setSeconds(0, 0).toString();
+    // setSeconds를 하면 1970년0시0분0초(UTC)로부터 지금까지의 시간이 밀리초로 환산되서 나온다
+    // The number of milliseconds between 1 January 1970 00:00:00 UTC and the updated date.
     var start = startDateTime.setSeconds(0, 0);
     var end = endDateTime.setSeconds(0, 0);
     console.log("n : " + now + " s : " + start + " e : " + end);
-    // 분단위까지만 비교하기, 초단위까지 비교하니깐 동일한 시간(분)에서 체크 안 됌
     if (now >= start && now <= end) {
         return true;
     }

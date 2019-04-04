@@ -79,4 +79,13 @@ public class EventTest {
         events.add(previousEvent);
         assertThat(addEvent.isOverlap(events)).isTrue();
     }
+
+    @Test
+    public void checkIn() {
+        Event eventCheckedIn = new Event(location401, "황태원", startDateTime, endDateTime);
+        eventCheckedIn.checkIn();
+        assertThat(eventCheckedIn.isCheckIn()).isTrue();
+        eventCheckedIn.cancelCheckIn();
+        assertThat(eventCheckedIn.isCheckIn()).isFalse();
+    }
 }

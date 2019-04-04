@@ -17,6 +17,7 @@ public class Event implements Comparable<Event> {
     private LocalDateTime startDateTime;
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime endDateTime;
+    private boolean checkIn = false;
 
     public Event() {
     }
@@ -127,5 +128,17 @@ public class Event implements Comparable<Event> {
     @Override
     public int compareTo(Event o) {
         return this.getStartDateTime().compareTo(o.getStartDateTime());
+    }
+
+    public boolean isCheckIn() {
+        return checkIn;
+    }
+
+    public void checkIn() {
+        checkIn = true;
+    }
+
+    public void cancelCheckIn() {
+        checkIn = false;
     }
 }
