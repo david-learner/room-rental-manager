@@ -323,7 +323,7 @@ Date.prototype.fromDatetimeLocal = (function (BST) {
 
 //body가 load되었을 때 실행
 window.onload = function () {
-    setCurrentTime();
+    setCurrentTime(),
 
     // 페이지 로딩시 고정된 대여장소 로딩
     getLocations(function (data) {
@@ -361,5 +361,5 @@ window.onload = function () {
             events.push(data[i]);
         }
         drawEvents(data);
-    });
+    })
 }

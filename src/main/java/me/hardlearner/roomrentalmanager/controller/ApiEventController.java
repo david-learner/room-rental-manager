@@ -16,8 +16,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/api/events")
-public class EventController {
-    private static final Logger log = LoggerFactory.getLogger(EventController.class);
+public class ApiEventController {
+    private static final Logger log = LoggerFactory.getLogger(ApiEventController.class);
 
     @Autowired
     EventService eventService;
@@ -39,12 +39,8 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<Event> createEvent(EventInputDto eventInputDto) {
-//        Location location = locationRepository.findByRoomNo(eventInputDto.getRoomno()).orElseThrow(IllegalArgumentException::new);
-//        log.debug("eventInputDto start : " + eventInputDto.getStartdatetime());
-//        Event event = eventRepository.save(eventInputDto.toEvent(location));
-//        log.debug("event start : " + event.getStartDateTime());
         Event createdEvent = eventService.createEvent(eventInputDto);
-        URI createdUri = linkTo(EventController.class).slash(createdEvent.getId()).toUri();
+        URI createdUri = linkTo(ApiEventController.class).slash(createdEvent.getId()).toUri();
         return ResponseEntity.created(createdUri).body(createdEvent);
     }
 
@@ -57,5 +53,10 @@ public class EventController {
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(EventInputDto eventInputDto, @PathVariable Long id) {
         return ResponseEntity.ok(eventService.updateEvent(eventInputDto, id));
+    }
+
+    @GetMapping("/days/{date}/endfirst")
+    public ResponseEntity<List<Event>> getEventsOfDayOrderByEndDatetime(@PathVariable String date) {
+        return ResponseEntity.ok(eventService.getEventsWhereDateOrderByEnddatetimeFirst(date));
     }
 }

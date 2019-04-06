@@ -1,6 +1,7 @@
 package me.hardlearner.roomrentalmanager;
 
 import me.hardlearner.roomrentalmanager.domain.Event;
+import me.hardlearner.roomrentalmanager.domain.EventEnddateTimeFirstComparator;
 import me.hardlearner.roomrentalmanager.domain.EventInputDto;
 import me.hardlearner.roomrentalmanager.domain.Location;
 import me.hardlearner.roomrentalmanager.exception.EventNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,6 +81,12 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-
+    public List<Event> getEventsWhereDateOrderByEnddatetimeFirst(String date) {
+        EventEnddateTimeFirstComparator enddateTimeFirst = new EventEnddateTimeFirstComparator();
+        List<Event> events = getEventsWhereDate(date);
+        Collections.sort(events, enddateTimeFirst);
+        log.debug(Arrays.toString(events.toArray()));
+        return events;
+    }
 }
 
