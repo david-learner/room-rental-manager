@@ -140,25 +140,62 @@ function drawEvents(data) {
         var startDateTime = new Date(data[i].startDateTime);
         var endDateTime = new Date(data[i].endDateTime);
 
-        var timeEventElement1 = createTimeEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime);
-        // timeRow는 대여장소를 순서대로 들고 있고, 대여장소의 id에 해당하는 장소의 자녀로 timeEvents를 추가해준다
         var children = timeRows[locationId - 1].children;
-        if (children.length != 0) {
-            var lastChild = children[children.length-1];
-            var endDateTimeElement = lastChild.getElementsByTagName("div")[7];
-            var nextStartDateTime = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
-            if(endDateTimeElement.text == nextStartDateTime.text) {
-                lastChild.getElementsByTagName("div")[7].remove();
-            }else {
-                endDateTimeElement.innerHTML = nextStartDateTime;
+        // 제일 앞 공실
+        if (children.length == 0) {
+            var previousStartDateTime = new Date();
+            previousStartDateTime.setHours(0, 0, 0, 0);
+            var nextStarDateTime = new Date(data[i].startDateTime);
+            var timeEventElement0 = createTimeEventElement(null, null, null, "공실", previousStartDateTime, nextStarDateTime);
+            timeRows[locationId - 1].appendChild(timeEventElement0);
+        }
+
+        var timeEventElement1 = createTimeEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime);
+        timeRows[locationId - 1].appendChild(timeEventElement1);
+
+
+        var nextStarDateTime = new Date();
+        var nextLocationNumber = 0;
+        if (i < data.length - 1) {
+            nextLocationNumber = data[i + 1].location.roomNo;
+            // 중간 공실
+            if (locationNumber == nextLocationNumber) {
+               nextStarDateTime = new Date(data[i+1].startDateTime);
             }
         }
-        timeRows[locationId - 1].appendChild(timeEventElement1);
-        if (i < data.length-1) {
-            // 빈 시간을 표시하기 위한 것
-            var timeEventElement2 = createTimeEventElement(null, locationId, locationNumber, "공실", endDateTime, null);
+        if (i == (data.length - 1)) {
+            nextLocationNumber = data[i].location.roomNo;
+            nextStarDateTime.setHours(24, 0, 0, 0);
+        }
+        // 장소 바뀌기 직전 공실 표시(마지막 공실)
+        if (locationNumber != nextLocationNumber) {
+            nextStarDateTime.setHours(24, 0, 0, 0);
+        }
+
+        var nextStartDateTimeText = leftZeroPad(nextStarDateTime.getHours()) + ':' + leftZeroPad(nextStarDateTime.getMinutes());
+        var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
+        if (nextStartDateTimeText != endDateTimeText) {
+            var timeEventElement2 = createTimeEventElement(null, null, null, "공실", endDateTime, nextStarDateTime);
             timeRows[locationId - 1].appendChild(timeEventElement2);
         }
+        // timeRow는 대여장소를 순서대로 들고 있고, 대여장소의 id에 해당하는 장소의 자녀로 timeEvents를 추가해준다
+        // var children = timeRows[locationId - 1].children;
+        // if (children.length != 0) {
+        //     var lastChild = children[children.length-1];
+        //     var endDateTimeElement = lastChild.getElementsByTagName("div")[7];
+        //     var nextStartDateTime = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
+        //     if(endDateTimeElement.text == nextStartDateTime.text) {
+        //         lastChild.getElementsByTagName("div")[7].remove();
+        //     }else {
+        //         endDateTimeElement.innerHTML = nextStartDateTime;
+        //     }
+        // }
+
+        // if (i < data.length-1) {
+        //     // 빈 시간을 표시하기 위한 것
+        //     var timeEventElement2 = createTimeEventElement(null, locationId, locationNumber, "공실", endDateTime, null);
+        //     timeRows[locationId - 1].appendChild(timeEventElement2);
+        // }
     }
 }
 
@@ -190,12 +227,14 @@ function createTimeEventElement(eventId, locationId, locationNumber, lessorName,
     var timeEventElement = document.createElement("div");
     timeEventElement.classList.add("d-flex", "flex-column", "time-event");
     // 만약 지금 진행중인 이벤트면 백그라운드 색 넣기
-    if (startDateTime != null && endDateTime != null) {
+    if (startDateTime != null && endDateTime != null && lessorName != "공실") {
         if (isNow(startDateTime, endDateTime)) {
             timeEventElement.classList.add("time-now");
         }
     }
-    timeEventElement.setAttribute("onclick", "loadUpdateDeleteForm(event)");
+    if (lessorName != "공실") {
+        timeEventElement.setAttribute("onclick", "loadUpdateDeleteForm(event)");
+    }
 
     var eventIdElement = document.createElement("div");
     eventIdElement.setAttribute("style", "display: none;");
