@@ -2,7 +2,6 @@ package me.hardlearner.roomrentalmanager.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -127,7 +126,19 @@ public class Event implements Comparable<Event> {
 
     @Override
     public int compareTo(Event o) {
-        return this.getStartDateTime().compareTo(o.getStartDateTime());
+        if (this.location.getRoomNo() == o.location.getRoomNo()) {
+            if (this.startDateTime.isAfter(o.getStartDateTime())) {
+                return 1;
+            }
+            if (this.startDateTime.isBefore(o.getStartDateTime())) {
+                return -1;
+            }
+            return 0;
+        }
+        if (this.location.getRoomNo() > o.location.getRoomNo()) {
+            return 1;
+        }
+        return -1;
     }
 
     public boolean isCheckIn() {

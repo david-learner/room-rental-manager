@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,6 +15,7 @@ public class EventTest {
 
     private Location location401;
     private Location location402;
+    private Location location403;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
@@ -20,6 +23,7 @@ public class EventTest {
     public void setUp() {
         location401 = new Location(401, PianoCategory.GRAND, 1);
         location402 = new Location(402, PianoCategory.UPRIGHT, 2);
+        location403 = new Location(403, PianoCategory.UPRIGHT, 2);
         startDateTime = LocalDateTime.of(2019, 3, 8, 9, 00);
         endDateTime = LocalDateTime.of(2019, 3, 8, 11, 00);
     }
@@ -87,5 +91,19 @@ public class EventTest {
         assertThat(eventCheckedIn.isCheckIn()).isTrue();
         eventCheckedIn.cancelCheckIn();
         assertThat(eventCheckedIn.isCheckIn()).isFalse();
+    }
+
+    @Test
+    public void sort() {
+        Event e1 = new Event(location401, "황태원1", LocalDateTime.of(2019, 04, 07, 10, 00), LocalDateTime.of(2019, 04, 07, 11, 00));
+        Event e2 = new Event(location402, "황태원2", LocalDateTime.of(2019, 04, 07, 10, 30), LocalDateTime.of(2019, 04, 07, 11, 30));
+        Event e3 = new Event(location401, "황태원3", LocalDateTime.of(2019, 04, 07, 11, 00), LocalDateTime.of(2019, 04, 07, 12, 00));
+
+        List<Event> events = new ArrayList<>();
+        events.add(e1);
+        events.add(e2);
+        events.add(e3);
+        Collections.sort(events);
+        System.out.println(Arrays.toString(events.toArray()));
     }
 }

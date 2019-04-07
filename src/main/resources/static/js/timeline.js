@@ -119,7 +119,7 @@ function isNow(startDateTime, endDateTime) {
     // The number of milliseconds between 1 January 1970 00:00:00 UTC and the updated date.
     var start = startDateTime.setSeconds(0, 0);
     var end = endDateTime.setSeconds(0, 0);
-    console.log("n : " + now + " s : " + start + " e : " + end);
+    // console.log("n : " + now + " s : " + start + " e : " + end);
     if (now >= start && now <= end) {
         return true;
     }
@@ -130,68 +130,102 @@ function drawEvents(data) {
     // console.log(JSON.stringify(data));
 
     var timeRows = document.getElementById("time-events").children;
-    console.log(timeRows[1]);
+    // console.log(timeRows[1]);
     for (var i = 0; i < data.length; i++) {
-        var startDateTime = new Date(data[i].startDateTime);
-        var endDateTime = new Date(data[i].endDateTime);
-        // console.log(data[i].startDateTime + ' -> ' + startDateTime);
-        // console.log(data[i].endDateTime + ' -> ' + endDateTime);
-
+        // 필요한 데이터
         var eventId = data[i].id;
         var locationId = data[i].location.id;
         var locationNumber = data[i].location.roomNo;
-        var lessorNameTextNode = document.createTextNode(data[i].lessorName);
+        var lessorName = data[i].lessorName;
+        var startDateTime = new Date(data[i].startDateTime);
+        var endDateTime = new Date(data[i].endDateTime);
 
+        var timeEventElement1 = createTimeEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime);
+        // timeRow는 대여장소를 순서대로 들고 있고, 대여장소의 id에 해당하는 장소의 자녀로 timeEvents를 추가해준다
+        var children = timeRows[locationId - 1].children;
+        if (children.length != 0) {
+            var lastChild = children[children.length-1];
+            var endDateTimeElement = lastChild.getElementsByTagName("div")[7];
+            var nextStartDateTime = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
+            if(endDateTimeElement.text == nextStartDateTime.text) {
+                lastChild.getElementsByTagName("div")[7].remove();
+            }else {
+                endDateTimeElement.innerHTML = nextStartDateTime;
+            }
+        }
+        timeRows[locationId - 1].appendChild(timeEventElement1);
+        if (i < data.length-1) {
+            // 빈 시간을 표시하기 위한 것
+            var timeEventElement2 = createTimeEventElement(null, locationId, locationNumber, "공실", endDateTime, null);
+            timeRows[locationId - 1].appendChild(timeEventElement2);
+        }
+    }
+}
+
+function createTimeEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime) {
+    // 데이터를 텍스트로
+    if (startDateTime != null) {
         var startDateTimeText = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
-        var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
-        // var dateTimeNode = document.createTextNode(startDateTimeText + '~' + endDateTimeText);
-        var startDateTimeNode = document.createElement("div");
-        var endDateTimeNode = document.createElement("div");
-        startDateTimeNode.textContent = startDateTimeText;
-        endDateTimeNode.textContent = endDateTimeText;
-        var dateTimeNode = document.createElement("div");
-        dateTimeNode.append(startDateTimeNode, endDateTimeNode);
+    }else {
+        var startDateTimeText = "empty";
+    }
 
-        var timeEventElement = document.createElement("div");
-        timeEventElement.classList.add("d-flex", "flex-column", "time-event");
-        // 만약 지금 진행중인 이벤트면 백그라운드 색 넣기
+    if (endDateTime != null) {
+        var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
+    }else {
+        var endDateTimeText = "empty";
+    }
+
+    var startDateTimeNode = document.createElement("div");
+    startDateTimeNode.setAttribute("name", "startDateTime");
+    startDateTimeNode.textContent = startDateTimeText;
+    var endDateTimeNode = document.createElement("div");
+    endDateTimeNode.setAttribute("name", "endDateTime");
+    endDateTimeNode.textContent = endDateTimeText;
+    var dateTimeNode = document.createElement("div");
+    dateTimeNode.setAttribute("name", "dateTimes");
+    dateTimeNode.append(startDateTimeNode, endDateTimeNode);
+
+    // 타임 엘리먼트 생성
+    var timeEventElement = document.createElement("div");
+    timeEventElement.classList.add("d-flex", "flex-column", "time-event");
+    // 만약 지금 진행중인 이벤트면 백그라운드 색 넣기
+    if (startDateTime != null && endDateTime != null) {
         if (isNow(startDateTime, endDateTime)) {
             timeEventElement.classList.add("time-now");
-
         }
-        timeEventElement.setAttribute("onclick", "loadUpdateDeleteForm(event)");
-
-        var eventIdElement = document.createElement("div");
-        eventIdElement.setAttribute("style", "display: none;");
-        eventIdElement.setAttribute("name", "eventId");
-
-        var locationIdElement = document.createElement("div");
-        locationIdElement.setAttribute("style", "display: none;");
-        locationIdElement.setAttribute("name", "locationId");
-
-        var locationNumberElement = document.createElement("div");
-        locationNumberElement.setAttribute("style", "display: none;");
-        locationNumberElement.setAttribute("name", "locationNumber");
-
-        var lessorNameElement = document.createElement("div");
-        lessorNameElement.classList.add("time-lessor");
-
-        var dateTimeElement = document.createElement("div");
-        dateTimeElement.classList.add("time-datetime");
-
-        // div에 text 넣기
-        lessorNameElement.appendChild(lessorNameTextNode);
-        dateTimeElement.appendChild(dateTimeNode);
-        eventIdElement.appendChild(document.createTextNode(eventId));
-        locationIdElement.appendChild(document.createTextNode(locationId));
-        locationNumberElement.appendChild(document.createTextNode(locationNumber));
-
-        // event div에 내용 추가하기
-        timeEventElement.append(eventIdElement, locationIdElement, locationNumberElement, lessorNameElement, dateTimeElement);
-
-        timeRows[locationId - 1].appendChild(timeEventElement);
-        // timeRows[locationId].appendChild(timeEventElement);
     }
+    timeEventElement.setAttribute("onclick", "loadUpdateDeleteForm(event)");
+
+    var eventIdElement = document.createElement("div");
+    eventIdElement.setAttribute("style", "display: none;");
+    eventIdElement.setAttribute("name", "eventId");
+
+    var locationIdElement = document.createElement("div");
+    locationIdElement.setAttribute("style", "display: none;");
+    locationIdElement.setAttribute("name", "locationId");
+
+    var locationNumberElement = document.createElement("div");
+    locationNumberElement.setAttribute("style", "display: none;");
+    locationNumberElement.setAttribute("name", "locationNumber");
+
+    var lessorNameElement = document.createElement("div");
+    lessorNameElement.classList.add("time-lessor");
+
+    var dateTimeElement = document.createElement("div");
+    dateTimeElement.classList.add("time-datetime");
+
+    // div에 text 넣기
+    lessorNameElement.appendChild(document.createTextNode(lessorName));
+    dateTimeElement.appendChild(dateTimeNode);
+    eventIdElement.appendChild(document.createTextNode(eventId));
+    locationIdElement.appendChild(document.createTextNode(locationId));
+    locationNumberElement.appendChild(document.createTextNode(locationNumber));
+
+    // event div에 내용 추가하기
+    timeEventElement.append(eventIdElement, locationIdElement, locationNumberElement, lessorNameElement, dateTimeElement);
+
+    return timeEventElement;
 }
 
 function getCurrentDateTime() {

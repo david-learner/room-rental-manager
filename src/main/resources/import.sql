@@ -49,6 +49,10 @@ INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2
 # INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황주찬', '2019-02-28 09:34:00', '2019-02-28 10:34:00', 1, 0);
 # INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('김화원', '2019-02-28 09:34:00', '2019-02-28 10:34:00', 2, 0);
 # INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('신동준', '2019-03-13 14:00:00', '2019-03-13 15:00:00', 2, 0);
+INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황태원', '2019-04-07 09:00:00', '2019-04-07 09:30:00', 2, 0);
+INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황태원', '2019-04-07 09:30:00', '2019-04-07 10:00:00', 2, 0);
+INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황태원', '2019-04-07 10:00:00', '2019-04-07 10:30:00', 2, 0);
+INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황태원', '2019-04-07 10:30:00', '2019-04-07 11:00:00', 2, 0);
 INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황태원', '2019-04-07 09:00:00', '2019-04-07 09:30:00', 1, 0);
 INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황태원', '2019-04-07 09:30:00', '2019-04-07 10:00:00', 1, 0);
 INSERT INTO event (lessor_name, start_date_time, end_date_time, location_id, check_in) VALUES ('황태원', '2019-04-07 10:00:00', '2019-04-07 10:30:00', 1, 0);
