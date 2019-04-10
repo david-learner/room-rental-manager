@@ -59,4 +59,9 @@ public class ApiEventController {
     public ResponseEntity<List<Event>> getEventsOfDayOrderByEndDatetime(@PathVariable String date) {
         return ResponseEntity.ok(eventService.getEventsWhereDateOrderByEnddatetimeFirst(date));
     }
+
+    @GetMapping("/days/{date}/emptyspaces")
+    public ResponseEntity<List<Event>> getEmptySpacesOfDayOrderByStartDateTime(@PathVariable String date) {
+        return ResponseEntity.ok(eventService.getEventsWhereDateOrderByEnddatetimeFirst(date));
+    }
 }

@@ -9,10 +9,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EventEnddateTimeFirstComparatorTest {
+public class EventEndDateTimeFirstComparatorTest {
     @Test
     public void comparator() {
-        EventEnddateTimeFirstComparator comparator = new EventEnddateTimeFirstComparator();
+        EventEndDateTimeFirstComparator comparator = new EventEndDateTimeFirstComparator();
         Location location401 = new Location(401, PianoCategory.UPRIGHT, 2);
         Location location402 = new Location(402, PianoCategory.UPRIGHT, 2);
         Event e1 = new Event(location401, "황태원", LocalDateTime.of(2019, 1, 1, 10, 10), LocalDateTime.of(2019, 1, 1, 10, 40));

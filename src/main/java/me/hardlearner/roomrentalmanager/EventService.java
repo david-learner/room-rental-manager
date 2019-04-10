@@ -1,7 +1,7 @@
 package me.hardlearner.roomrentalmanager;
 
 import me.hardlearner.roomrentalmanager.domain.Event;
-import me.hardlearner.roomrentalmanager.domain.EventEnddateTimeFirstComparator;
+import me.hardlearner.roomrentalmanager.domain.EventEndDateTimeFirstComparator;
 import me.hardlearner.roomrentalmanager.domain.EventInputDto;
 import me.hardlearner.roomrentalmanager.domain.Location;
 import me.hardlearner.roomrentalmanager.exception.EventNotFoundException;
@@ -82,9 +82,17 @@ public class EventService {
     }
 
     public List<Event> getEventsWhereDateOrderByEnddatetimeFirst(String date) {
-        EventEnddateTimeFirstComparator enddateTimeFirst = new EventEnddateTimeFirstComparator();
+        EventEndDateTimeFirstComparator enddateTimeFirst = new EventEndDateTimeFirstComparator();
         List<Event> events = getEventsWhereDate(date);
         Collections.sort(events, enddateTimeFirst);
+        log.debug(Arrays.toString(events.toArray()));
+        return events;
+    }
+
+    public List<Event> getEmptyTimesWhereDateOrderByStartDateTimeFirt(String date) {
+        EventEndDateTimeFirstComparator startDateTimeComparator = new EventEndDateTimeFirstComparator();
+        List<Event> events = getEventsWhereDate(date);
+        Collections.sort(events, startDateTimeComparator);
         log.debug(Arrays.toString(events.toArray()));
         return events;
     }

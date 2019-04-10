@@ -15,4 +15,9 @@ public class IndexController {
     public String index2() {
         return "index";
     }
+
+    @GetMapping("/empty-space")
+    public String emptySpace() {
+        return "empty-space";
+    }
 }

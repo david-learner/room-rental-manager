@@ -16,14 +16,11 @@ INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 507);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 508);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 509);
+INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 510);
+INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 511);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 512);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 513);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 514);
-INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 523);
-INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 532);
-INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 537);
-INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 510);
-INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 511);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 515);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 516);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 517);
@@ -32,6 +29,11 @@ INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 1, 520);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 521);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 522);
+
+INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 523);
+INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 532);
+INSERT INTO location (piano_category, piano_count, room_no) VALUES ('GRAND', 1, 537);
+
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 2, 524);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 1, 525);
 INSERT INTO location (piano_category, piano_count, room_no) VALUES ('UPRIGHT', 1, 526);
