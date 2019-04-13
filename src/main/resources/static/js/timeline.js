@@ -18,6 +18,15 @@ function getEvents(date, callback) {
     }).done(callback);
 }
 
+function getEmptyEvents(date, callback) {
+    $.ajax({
+        type: 'GET',
+        dataType: "json",
+        url: '/api/events/days/' + date + '/emptyevents',
+        // 요청에 성공하면, 요청한 JSON 데이터를 done()으로 넘겨준다
+    }).done(callback);
+}
+
 function create(event) {
     event.preventDefault(); // avoid to execute the actual submit of the form.
     if (!checkEventInputForm()) {
@@ -130,7 +139,7 @@ function drawEvents(data) {
     // console.log(JSON.stringify(data));
 
     var timeRows = document.getElementById("time-events").children;
-    // console.log(timeRows[1]);
+
     for (var i = 0; i < data.length; i++) {
         // 필요한 데이터
         var eventId = data[i].id;
@@ -140,6 +149,9 @@ function drawEvents(data) {
         var startDateTime = new Date(data[i].startDateTime);
         var endDateTime = new Date(data[i].endDateTime);
 
+        console.log(timeRows);
+        console.log("loc id : " + locationId);
+        console.log("timeRows[id-1] " + timeRows[locationId-1]);
         var children = timeRows[locationId - 1].children;
         // 제일 앞 공실
         if (children.length == 0) {
@@ -394,45 +406,3 @@ Date.prototype.fromDatetimeLocal = (function (BST) {
 //
 // );
 
-//body가 load되었을 때 실행
-window.onload = function () {
-    setCurrentTime(),
-
-    // 페이지 로딩시 고정된 대여장소 로딩
-    getLocations(function (data) {
-        // console.log(JSON.stringify(data));
-
-        for (var i in data) {
-            locations.push(data[i]);
-            // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
-            var location = document.createElement("div");
-            location.classList.add("time-location");
-            var locationNo = document.createElement("div");
-            locationNo.append(document.createTextNode(data[i].roomNo));
-            var pianoInfo = document.createElement("div");
-            var pianoCategory = document.createTextNode(data[i].pianoCategory);
-            var pianoCount = document.createTextNode(data[i].pianoCount);
-            var divider = document.createTextNode(" / ");
-            pianoInfo.append(pianoCategory, divider, pianoCount);
-            location.append(locationNo, pianoInfo);
-            document.getElementById("time-locations").appendChild(location);
-
-            // id가 time-events인 태그 아래에 각 방의 대여 기록을 나타내는 div태그 삽입
-            var event = document.createElement("div");
-            event.classList.add("d-flex", "flex-row", "time-row");
-            document.getElementById("time-events").appendChild(event);
-        }
-
-        setLocationsToDropdownMenu(data);
-    }),
-
-    setCurrentDateTime(),
-
-    // 오늘 날짜에 해당하는 이벤트 불러오기
-    getEvents(getDays(), function (data) {
-        for (var i in data) {
-            events.push(data[i]);
-        }
-        drawEvents(data);
-    })
-}

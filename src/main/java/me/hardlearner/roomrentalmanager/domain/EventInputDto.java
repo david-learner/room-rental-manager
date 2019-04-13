@@ -3,7 +3,7 @@ package me.hardlearner.roomrentalmanager.domain;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
 
 public class EventInputDto {
     private int roomno;
@@ -37,8 +37,12 @@ public class EventInputDto {
     }
 
     public void setStartdatetime(LocalDateTime startdatetime) {
-//        System.out.println("startDate is converting");
-//        this.startdatetime = LocalDateTime.parse(startdatetime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));;
+        if (startdatetime.toLocalTime().isBefore(LocalTime.of(9, 0, 0, 0))) {
+            throw new IllegalArgumentException("오전 9시부터 대여가능합니다");
+        }
+        if (startdatetime.toLocalTime().isAfter(LocalTime.of(17, 51, 0, 0))) {
+            throw new IllegalArgumentException("마지막 대여 시각은 오후 5시 50분까지 입니다");
+        }
         this.startdatetime = startdatetime;
     }
 
@@ -47,6 +51,9 @@ public class EventInputDto {
     }
 
     public void setEnddatetime(LocalDateTime enddatetime) {
+        if (enddatetime.toLocalTime().isAfter(LocalTime.of(18, 1, 0, 0))) {
+            throw new IllegalArgumentException("대여 종료 시각은 오후 6시입니다");
+        }
         this.enddatetime = enddatetime;
     }
 

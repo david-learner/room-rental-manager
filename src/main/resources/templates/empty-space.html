@@ -16,7 +16,7 @@
         <!--<div class="border-default time-location">402</div>-->
     </div>
     <div class="d-flex flex-column border-default time-events" id="time-events">
-        
+
     </div>
     <!-- lightbox에 사용될 폼 -->
     <div style="display: none;" id="update-delete-box">
@@ -48,5 +48,46 @@
 </section>
 <footer></footer>
 {{> common/footer}}
+<script>
+    window.onload = function () {
+        setCurrentTime(),
+
+            // 페이지 로딩시 고정된 대여장소 로딩
+            getLocations(function (data) {
+                // console.log(JSON.stringify(data));
+
+                for (var i in data) {
+                    locations.push(data[i]);
+                    // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
+                    var location = document.createElement("div");
+                    location.classList.add("time-location");
+                    var locationNo = document.createElement("div");
+                    locationNo.append(document.createTextNode(data[i].roomNo));
+                    var pianoInfo = document.createElement("div");
+                    var pianoCategory = document.createTextNode(data[i].pianoCategory);
+                    var pianoCount = document.createTextNode(data[i].pianoCount);
+                    var divider = document.createTextNode(" / ");
+                    pianoInfo.append(pianoCategory, divider, pianoCount);
+                    location.append(locationNo, pianoInfo);
+                    document.getElementById("time-locations").appendChild(location);
+
+                    // id가 time-events인 태그 아래에 각 방의 대여 기록을 나타내는 div태그 삽입
+                    var event = document.createElement("div");
+                    event.classList.add("d-flex", "flex-row", "time-row");
+                    document.getElementById("time-events").appendChild(event);
+                }
+
+                // 오늘 날짜에 해당하는 이벤트 불러오기
+                getEmptyEvents(getDays(), function (data) {
+                    for (var i in data) {
+                        events.push(data[i]);
+                    }
+                    drawEvents(data);
+                })
+            }),
+
+            setCurrentDateTime();
+    }
+</script>
 </body>
 </html>
