@@ -5,22 +5,21 @@
 <header class="d-flex flex-row justify-content-center">
     <div class="d-flex flex-column col-4">
         <div class="d-flex flex-column">
-            <div class="text-center display-4">현재시간</div>
-            <div class="text-center display-4" id="current-time-view"></div>
+            <div class="text-center display-6">현재시간</div>
+            <div class="text-center display-6" id="current-time-view"></div>
         </div>
         <form name="eventInputForm" id="eventForm" class="d-flex flex-column">
-
-            <label class="mb-0 mt-1">이름</label>
-            <input class="" type="text" placeholder="대여자 성명" name="lessorname"/>
+            <!--<label class="mb-0 mt-1">이름</label>-->
+            <span>이름</span><input class="d-inline" type="text" placeholder="대여자 성명" name="lessorname"/>
 
             <!--<input type="text" placeholder="연습실 번호" name="roomno"/>-->
-            <label class="mb-0 mt-1">연습실</label>
-            <select class="" name="roomno" id="room-list"></select>
+            <!--<label class="mb-0 mt-1">연습실</label>-->
+            <span>연습실</span><select class="d-inline" name="roomno" id="room-list"></select>
 
-            <label class="mb-0 mt-1">시작시간</label>
-            <input class="" type="datetime-local" id="start-date" name="startdatetime"/>
-            <label class="mb-0 mt-1">종료시간</label>
-            <input class="" type="datetime-local" id="end-date" name="enddatetime"/>
+            <!--<label class="mb-0 mt-1">시작시간</label>-->
+            <span>시작시간</span><input class="" type="datetime-local" id="start-date" name="startdatetime"/>
+            <!--<label class="mb-0 mt-1">종료시간</label>-->
+            <span>종료시간</span><input class="" type="datetime-local" id="end-date" name="enddatetime"/>
 
             <div class="d-flex flex-column">
                 <label class="mb-0 mt-1">대여시간 퀵메뉴</label>
@@ -93,31 +92,8 @@
 
             // 페이지 로딩시 고정된 대여장소 로딩
             getLocations(function (data) {
-                // console.log(JSON.stringify(data));
-
-                for (var i in data) {
-                    locations.push(data[i]);
-                    // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
-                    var location = document.createElement("div");
-                    location.classList.add("time-location");
-                    var locationNo = document.createElement("div");
-                    locationNo.append(document.createTextNode(data[i].roomNo));
-                    var pianoInfo = document.createElement("div");
-                    var pianoCategory = document.createTextNode(data[i].pianoCategory);
-                    var pianoCount = document.createTextNode(data[i].pianoCount);
-                    var divider = document.createTextNode(" / ");
-                    pianoInfo.append(pianoCategory, divider, pianoCount);
-                    location.append(locationNo, pianoInfo);
-                    document.getElementById("time-locations").appendChild(location);
-
-                    // id가 time-events인 태그 아래에 각 방의 대여 기록을 나타내는 div태그 삽입
-                    var event = document.createElement("div");
-                    event.classList.add("d-flex", "flex-row", "time-row");
-                    document.getElementById("time-events").appendChild(event);
-                }
-
+                drawLocations(data),
                 setLocationsToDropdownMenu(data);
-
                 // 오늘 날짜에 해당하는 이벤트 불러오기
                 getEvents(getDays(), function (data) {
                     for (var i in data) {

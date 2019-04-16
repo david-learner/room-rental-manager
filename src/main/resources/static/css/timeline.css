@@ -7,7 +7,8 @@ header {
 }
 
 .time-event, .time-location {
-    height: 80px;
+    font-size: 1vw;
+    height: 40px;
     width: 100px;
     flex-shrink: 0;
     border: 1px solid black;
@@ -19,7 +20,8 @@ header {
 
 .time-row {
     /* 데이터가 없어도 공간확보를 위해 */
-    height: 80px;
+    height: 40px;
+    
 }
 
 .time-now {

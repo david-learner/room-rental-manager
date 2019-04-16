@@ -37,6 +37,11 @@ public class ApiEventController {
         return ResponseEntity.ok(eventService.getEventsWhereDate(date));
     }
 
+    @GetMapping("/days/{date}/all")
+    public ResponseEntity<List<Event>> getEventsAndEmptyEventsOfDay(@PathVariable String date) {
+        return ResponseEntity.ok(eventService.getEventsAndEmptyEventsWhereDate(date));
+    }
+
     @PostMapping
     public ResponseEntity<Event> createEvent(EventInputDto eventInputDto) {
         Event createdEvent = eventService.createEvent(eventInputDto);

@@ -14,6 +14,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class EventService {
@@ -39,6 +41,18 @@ public class EventService {
         Collections.sort(events);
         return events;
     }
+
+    public List<Event> getEventsAndEmptyEventsWhereDate(String date) {
+        LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyMMdd"));
+        List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
+        List<Event> emptyEvents = EventUtils.getEmptyEvents(date, events);
+        List<Event> mergedEvents = Stream.of(events, emptyEvents)
+                .flatMap(x -> x.stream())
+                .sorted()
+                .collect(Collectors.toList());
+        return mergedEvents;
+    }
+
 
     public Event createEvent(EventInputDto eventInputDto) {
         LocalDate date = eventInputDto.getStartdatetime().toLocalDate();
