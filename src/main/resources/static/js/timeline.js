@@ -188,14 +188,6 @@ function drawLocations(data) {
         // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
         var location = document.createElement("div");
         location.classList.add("time-location");
-        // var locationNo = document.createElement("div");
-        // locationNo.append(document.createTextNode(data[i].roomNo));
-        // var pianoInfo = document.createElement("div");
-        // var pianoCategory = document.createTextNode(data[i].pianoCategory);
-        // var pianoCount = document.createTextNode(data[i].pianoCount);
-        // var divider = document.createTextNode(" / ");
-        // pianoInfo.append(pianoCategory, divider, pianoCount);
-        // location.append(locationNo, pianoInfo);
         var locationInfo = data[i].roomNo + "/" + data[i].pianoCategory.substring(0,1) + "/" + data[i].pianoCount;
         location.append(document.createTextNode(locationInfo));
         document.getElementById("time-locations").appendChild(location);
@@ -204,6 +196,32 @@ function drawLocations(data) {
         var event = document.createElement("div");
         event.classList.add("d-flex", "flex-row", "time-row");
         document.getElementById("time-events").appendChild(event);
+    }
+}
+
+function drawEmptyLocations(data) {
+    for (var i in data) {
+        locations.push(data[i]);
+
+        var emptyEvents = document.createElement("div");
+        emptyEvents.setAttribute("id", data[i].roomNo);
+        emptyEvents.classList.add("d-flex");
+
+        var locationInfo = data[i].roomNo + "/" + data[i].pianoCategory.substring(0,1) + "/" + data[i].pianoCount;
+        var location = document.createElement("div");
+        location.textContent = locationInfo;
+
+        emptyEvents.appendChild(location);
+
+        console.log(data.length);
+
+        if (i < (data.length / 2)) {
+            document.getElementById("left-empty-events").appendChild(emptyEvents);
+        }
+
+        if (i >= (data.length / 2)) {
+            document.getElementById("right-empty-events").appendChild(emptyEvents);
+        }
     }
 }
 
