@@ -151,7 +151,7 @@ function drawEvents(data) {
 
         console.log(timeRows);
         console.log("loc id : " + locationId);
-        console.log("timeRows[id-1] " + timeRows[locationId-1]);
+        console.log("timeRows[id-1] " + timeRows[locationId - 1]);
 
         var timeEventElement1 = createTimeEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime);
         timeRows[locationId - 1].appendChild(timeEventElement1);
@@ -159,9 +159,7 @@ function drawEvents(data) {
 }
 
 function drawEmptyEvents(data) {
-    // console.log(JSON.stringify(data));
-
-    var timeRows = document.getElementById("time-events").children;
+    console.log(JSON.stringify(data));
 
     for (var i = 0; i < data.length; i++) {
         // 필요한 데이터
@@ -172,12 +170,8 @@ function drawEmptyEvents(data) {
         var startDateTime = new Date(data[i].startDateTime);
         var endDateTime = new Date(data[i].endDateTime);
 
-        console.log(timeRows);
-        console.log("loc id : " + locationId);
-        console.log("timeRows[id-1] " + timeRows[locationId-1]);
-
-        var timeEventElement1 = createTimeEmptyEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime);
-        timeRows[locationId - 1].appendChild(timeEventElement1);
+        var emptyEvent = createTimeEmptyEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime);
+        document.getElementById(locationNumber).appendChild(emptyEvent);
     }
 }
 
@@ -188,7 +182,7 @@ function drawLocations(data) {
         // id가 time-locations인 태그 아래에 방번호를 나타내는 div태그 삽입
         var location = document.createElement("div");
         location.classList.add("time-location");
-        var locationInfo = data[i].roomNo + "/" + data[i].pianoCategory.substring(0,1) + "/" + data[i].pianoCount;
+        var locationInfo = data[i].roomNo + "/" + data[i].pianoCategory.substring(0, 1) + "/" + data[i].pianoCount;
         location.append(document.createTextNode(locationInfo));
         document.getElementById("time-locations").appendChild(location);
 
@@ -203,41 +197,43 @@ function drawEmptyLocations(data) {
     for (var i in data) {
         locations.push(data[i]);
 
+        // 방정보를 담은 엘리먼트를 제일 앞에 배치한다
         var emptyEvents = document.createElement("div");
         emptyEvents.setAttribute("id", data[i].roomNo);
-        emptyEvents.classList.add("d-flex");
+        emptyEvents.classList.add("d-flex", "border-primary", "border-bottom");
 
-        var locationInfo = data[i].roomNo + "/" + data[i].pianoCategory.substring(0,1) + "/" + data[i].pianoCount;
+        var locationInfo = data[i].roomNo + "/" + data[i].pianoCategory.substring(0, 1) + "/" + data[i].pianoCount;
         var location = document.createElement("div");
+        location.classList.add("mb-1", "mr-2");
         location.textContent = locationInfo;
 
-        emptyEvents.appendChild(location);
+        // emptyEvents.appendChild
+        emptyEvents.append(location, createDummyEventElement());
+        
+        // 모든 방개수를 4개의 열로 나누어 넣는다
+        var divider = Math.floor(data.length / 4) + 1; // 11
+        var quotient = Math.floor(i / divider); // quotient, remainder
 
-        console.log(data.length);
-
-        if (i < (data.length / 2)) {
-            document.getElementById("left-empty-events").appendChild(emptyEvents);
-        }
-
-        if (i >= (data.length / 2)) {
-            document.getElementById("right-empty-events").appendChild(emptyEvents);
+        switch (quotient) {
+            case 0 :
+                document.getElementById("empty-events-1").appendChild(emptyEvents);
+                break;
+            case 1 :
+                document.getElementById("empty-events-2").appendChild(emptyEvents);
+                break;
+            case 2 :
+                document.getElementById("empty-events-3").appendChild(emptyEvents);
+                break;
+            default : // case 3 and 4
+                document.getElementById("empty-events-4").appendChild(emptyEvents);
         }
     }
 }
 
 function createTimeEmptyEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime) {
     // 데이터를 텍스트로
-    // if (startDateTime != null) {
-        var startDateTimeText = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
-    // }else {
-    //     var startDateTimeText = "empty";
-    // }
-    //
-    // if (endDateTime != null) {
-        var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
-    // }else {
-    //     var endDateTimeText = "empty";
-    // }
+    var startDateTimeText = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
+    var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
 
     var startDateTimeNode = document.createElement("div");
     startDateTimeNode.setAttribute("name", "startDateTime");
@@ -247,59 +243,49 @@ function createTimeEmptyEventElement(eventId, locationId, locationNumber, lessor
     endDateTimeNode.textContent = endDateTimeText;
     var dateTimeNode = document.createElement("div");
     dateTimeNode.setAttribute("name", "dateTimes");
+    dateTimeNode.classList.add("pl-1", "pr-1", "border-secondary", "border");
     dateTimeNode.append(startDateTimeNode, endDateTimeNode);
+    if (endDateTime < new Date() && !(lessorName == "dummy")) {
+        console.log("지나간 시간");
+        dateTimeNode.classList.add("d-none");
+    }
 
     // 타임 엘리먼트 생성
     var timeEventElement = document.createElement("div");
-    timeEventElement.classList.add("d-flex", "flex-column", "time-event");
+
     // 만약 지금 진행중인 이벤트면 백그라운드 색 넣기
     if (isNow(startDateTime, endDateTime)) {
         timeEventElement.classList.add("time-now");
     }
 
-    // var eventIdElement = document.createElement("div");
-    // eventIdElement.setAttribute("style", "display: none;");
-    // eventIdElement.setAttribute("name", "eventId");
-
-    // var locationIdElement = document.createElement("div");
-    // locationIdElement.setAttribute("style", "display: none;");
-    // locationIdElement.setAttribute("name", "locationId");
-
-    // var locationNumberElement = document.createElement("div");
-    // locationNumberElement.setAttribute("style", "display: none;");
-    // locationNumberElement.setAttribute("name", "locationNumber");
-
-    // var lessorNameElement = document.createElement("div");
-    // lessorNameElement.classList.add("time-lessor");
-
     var dateTimeElement = document.createElement("div");
-    dateTimeElement.classList.add("time-datetime");
 
     // div에 text 넣기
-    // lessorNameElement.appendChild(document.createTextNode(lessorName));
     dateTimeElement.appendChild(dateTimeNode);
-    // eventIdElement.appendChild(document.createTextNode(eventId));
-    // locationIdElement.appendChild(document.createTextNode(locationId));
-    // locationNumberElement.appendChild(document.createTextNode(locationNumber));
 
     // event div에 내용 추가하기
-    // timeEventElement.append(eventIdElement, locationIdElement, locationNumberElement, lessorNameElement, dateTimeElement);
     timeEventElement.append(dateTimeElement);
 
     return timeEventElement;
+}
+
+function createDummyEventElement() {
+    var dummy = createTimeEmptyEventElement(null, null, null, "dummy", new Date(), new Date());
+    dummy.classList.add("invisible");
+    return dummy;
 }
 
 function createTimeEventElement(eventId, locationId, locationNumber, lessorName, startDateTime, endDateTime) {
     // 데이터를 텍스트로
     if (startDateTime != null) {
         var startDateTimeText = leftZeroPad(startDateTime.getHours()) + ':' + leftZeroPad(startDateTime.getMinutes());
-    }else {
+    } else {
         var startDateTimeText = "empty";
     }
 
     if (endDateTime != null) {
         var endDateTimeText = leftZeroPad(endDateTime.getHours()) + ':' + leftZeroPad(endDateTime.getMinutes());
-    }else {
+    } else {
         var endDateTimeText = "empty";
     }
 
@@ -318,9 +304,9 @@ function createTimeEventElement(eventId, locationId, locationNumber, lessorName,
     timeEventElement.classList.add("d-flex", "flex-column", "time-event");
     // 만약 지금 진행중인 이벤트면 백그라운드 색 넣기
     // if (startDateTime != null && endDateTime != null && lessorName != "공실") {
-        if (isNow(startDateTime, endDateTime)) {
-            timeEventElement.classList.add("time-now");
-        }
+    if (isNow(startDateTime, endDateTime)) {
+        timeEventElement.classList.add("time-now");
+    }
     // }
     if (lessorName != "공실") {
         timeEventElement.setAttribute("onclick", "loadUpdateDeleteForm(event)");
