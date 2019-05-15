@@ -16,7 +16,7 @@ public class EventServiceTest {
     @Test
     public void getEventsWithEmptyEvents() {
         List<Event> events = EventDummys.events;
-        List<Event> emptyEvents = EventUtils.getEmptyEvents("190410", events);
+        List<Event> emptyEvents = EventUtils.getEmptyEvents("190410", EventDummys.locations, events);
         List<Event> mergedEvents = Stream.of(events, emptyEvents)
                                             .flatMap(x -> x.stream())
                                             .collect(Collectors.toList());

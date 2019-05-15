@@ -19,4 +19,6 @@ public class EventDummys {
             new Event(locations.get(1), "장설", LocalDateTime.of(2019, 4, 10, 11, 30), LocalDateTime.of(2019, 4, 10, 12, 30)),
             new Event(locations.get(2), "신동준", LocalDateTime.of(2019, 4, 10, 16, 0), LocalDateTime.of(2019, 4, 10, 18, 0))
     ));
+
+    public static List<Event> emptyEvents = new ArrayList<>(Arrays.asList());
 }

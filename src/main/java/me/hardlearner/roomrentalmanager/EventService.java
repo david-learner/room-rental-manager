@@ -45,14 +45,14 @@ public class EventService {
     public List<Event> getEventsAndEmptyEventsWhereDate(String date) {
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyMMdd"));
         List<Event> events = eventRepository.findAllByStartDateTimeEquals(localDate.toString());
-        List<Event> emptyEvents = EventUtils.getEmptyEvents(date, events);
+        List<Location> locations = locationRepository.findAll();
+        List<Event> emptyEvents = EventUtils.getEmptyEvents(date, locations, events);
         List<Event> mergedEvents = Stream.of(events, emptyEvents)
                 .flatMap(x -> x.stream())
                 .sorted()
                 .collect(Collectors.toList());
         return mergedEvents;
     }
-
 
     public Event createEvent(EventInputDto eventInputDto) {
         LocalDate date = eventInputDto.getStartdatetime().toLocalDate();
@@ -104,7 +104,8 @@ public class EventService {
         EventEndDateTimeFirstComparator startDateTimeComparator = new EventEndDateTimeFirstComparator();
         List<Event> events = getEventsWhereDate(date);
         Collections.sort(events, startDateTimeComparator);
-        return EventUtils.getEmptyEvents(date, events);
+        List<Location> locations = locationRepository.findAll();
+        return EventUtils.getEmptyEvents(date, locations, events);
     }
 }
 

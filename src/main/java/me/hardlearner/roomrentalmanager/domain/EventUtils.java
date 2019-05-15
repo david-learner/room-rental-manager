@@ -1,5 +1,8 @@
 package me.hardlearner.roomrentalmanager.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -9,32 +12,45 @@ import java.util.List;
 import java.util.Map;
 
 public class EventUtils {
-    public static Map<Location, List<Event>> listToMap(List<Event> events) {
+    private static final Logger log =  LoggerFactory.getLogger(EventUtils.class);
+
+    public static Map<Location, List<Event>> listToMap(List<Location> locations, List<Event> events) {
         Map<Location, List<Event>> eventsMap = new HashMap<>();
 
-        for (Event event : events) {
-            if (eventsMap.get(event.getLocation()) == null) {
-                eventsMap.put(event.getLocation(), new ArrayList<>());
-            }
-            if (eventsMap.get(event.getLocation()) != null) {
-                eventsMap.get(event.getLocation()).add(event);
-            }
+        for (Location location : locations) {
+            eventsMap.put(location, new ArrayList<>());
         }
+
+        for (Event event : events) {
+            eventsMap.get(event.getLocation()).add(event);
+        }
+
+//        for (Event event : events) {
+//            if (eventsMap.get(event.getLocation()) == null) {
+//                eventsMap.put(event.getLocation(), new ArrayList<>());
+//            }
+//            if (eventsMap.get(event.getLocation()) != null) {
+//                eventsMap.get(event.getLocation()).add(event);
+//            }
+//        }
 
         return eventsMap;
     }
 
-    public static List<Event> getEmptyEvents(String date, List<Event> dbEvents) {
+    public static List<Event> getEmptyEvents(String date, List<Location> locations, List<Event> dbEvents) {
         LocalDate today = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyMMdd"));
         List<Event> emptyEvents = new ArrayList<>();
         Event startBaseEvent = EmptyEvent.getStartEmptyEvent(today);
         Event endBaseEvent = EmptyEvent.getEndEmptyEvent(today);
 
-        Map<Location, List<Event>> eventsMap = EventUtils.listToMap(dbEvents);
+        Map<Location, List<Event>> eventsMap = EventUtils.listToMap(locations, dbEvents);
         for (Location location : eventsMap.keySet()) {
             List<Event> events = eventsMap.get(location);
             if (events.isEmpty()) {
                 emptyEvents.add(EmptyEvent.of(location, startBaseEvent.getStartDateTime(), endBaseEvent.getEndDateTime()));
+                for (Event emptyEvent : emptyEvents) {
+                    log.debug(emptyEvent.toString());
+                }
             }
             if (events.size() == 1) {
                 for (Event event : events) {

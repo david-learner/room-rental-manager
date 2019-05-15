@@ -18,22 +18,21 @@ public class EventUtilsTest {
 
     @Test
     public void getEmptyEvents() {
-        List<Event> emptyEvents = EventUtils.getEmptyEvents("190410", events);
+//        List<Event> emptyEvents = EventUtils.getEmptyEvents("190410", events);
+        List<Event> emptyEvents = EventUtils.getEmptyEvents("190410", EventDummys.locations, EventDummys.emptyEvents);
 
-        for (Event emptyEvent : emptyEvents) {
-            System.out.println(emptyEvent.getLocation().getRoomNo() + " : " + emptyEvent.getStartDateTime() + " ~ " + emptyEvent.getEndDateTime());
-        }
+//        for (Event emptyEvent : emptyEvents) {
+//            System.out.println(emptyEvent.getLocation().getRoomNo() + " : " + emptyEvent.getStartDateTime() + " ~ " + emptyEvent.getEndDateTime());
+//        }
     }
 
-
-
-    @Test
-    public void listToMap() {
-        assertThat(EventUtils.listToMap(events)).isNotNull();
-
-        Map<Location, List<Event>> eventsMap = EventUtils.listToMap(events);
-        for (Location location : eventsMap.keySet()) {
-            System.out.println("loc : " + location.getRoomNo() + " // " + Arrays.toString(eventsMap.get(location).toArray()));
-        }
-    }
+//    @Test
+//    public void listToMap() {
+//        assertThat(EventUtils.listToMap(events)).isNotNull();
+//
+//        Map<Location, List<Event>> eventsMap = EventUtils.listToMap(events);
+//        for (Location location : eventsMap.keySet()) {
+//            System.out.println("loc : " + location.getRoomNo() + " // " + Arrays.toString(eventsMap.get(location).toArray()));
+//        }
+//    }
 }

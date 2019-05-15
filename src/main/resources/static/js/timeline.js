@@ -247,7 +247,7 @@ function createTimeEmptyEventElement(eventId, locationId, locationNumber, lessor
     dateTimeNode.append(startDateTimeNode, endDateTimeNode);
     if (endDateTime < new Date() && !(lessorName == "dummy")) {
         console.log("지나간 시간");
-        dateTimeNode.classList.add("d-none");
+        dateTimeNode.classList.add("time-passed");
     }
 
     // 타임 엘리먼트 생성
